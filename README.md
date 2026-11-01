@@ -12,7 +12,14 @@ problems/<題目名稱>/
 template/       新題目使用的 C++ 模板
 include/bits/   macOS 用的 <bits/stdc++.h> 替代
 scripts/        new.sh（建立新題）、run.sh（編譯並跑測資）
+notes/          學習講義
+docs/           使用說明
 ```
+
+## 講義與文件
+
+- [競賽圖論講義](notes/graph-theory.md)：八章觀念、十六題範例程式題、章末觀念檢測與六題分級練習
+- [GitHub 使用指南](docs/github-guide.md)：commit、push、pull 與常見狀況
 
 ## 使用方式
 
