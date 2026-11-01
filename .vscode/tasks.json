@@ -1,0 +1,24 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run tests (current problem)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/run.sh",
+      "args": ["${file}"],
+      "group": { "kind": "build", "isDefault": true },
+      "presentation": { "reveal": "always", "focus": true, "panel": "shared", "clear": true },
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "New problem",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/new.sh",
+      "args": ["${input:problemName}"],
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    { "id": "problemName", "type": "promptString", "description": "題目名稱（例如 cf-1900A）" }
+  ]
+}

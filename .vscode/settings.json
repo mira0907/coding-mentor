@@ -1,0 +1,5 @@
+{
+  "files.associations": { "*.in": "plaintext", "*.out": "plaintext" },
+  "files.exclude": { "**/sol": true, "**/*.dSYM": true },
+  "C_Cpp.default.cppStandard": "c++17"
+}

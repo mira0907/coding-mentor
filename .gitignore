@@ -1,0 +1,6 @@
+# 編譯產物
+problems/**/sol
+problems/**/*.dSYM/
+*.o
+a.out
+.DS_Store
