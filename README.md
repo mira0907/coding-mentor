@@ -18,7 +18,7 @@ docs/           使用說明
 
 ## 講義與文件
 
-- [競賽圖論講義](notes/graph-theory.md)：八章觀念、十六題範例程式題、章末觀念檢測與六題分級練習
+- [競賽圖論講義](notes/graph-theory.md)：八章觀念、十六題範例程式題、章末觀念檢測，以及每章簡單、中等、困難各一題的實作題與詳解
 - [GitHub 使用指南](docs/github-guide.md)：commit、push、pull 與常見狀況
 
 ## 使用方式
