@@ -585,6 +585,8 @@ vector<int> bfs(int s, const vector<vector<int>>& adj) {
 }
 ```
 
+**動手操作**：[BFS 互動動畫](https://claude.ai/artifact/T1ENzn5fmyvyHyoBYWYEpe#bfs)。可以自己畫圖、選起點，一步一步看佇列和 dist 怎麼變化，程式碼會同步標出執行到哪一行。打開「練習模式」可以先猜下一個取出的點。
+
 - **網格 BFS**：把每個格子當成點，用 `dx[] = {1,-1,0,0}`、`dy[] = {0,0,1,-1}` 列出四個鄰居，記得檢查邊界與障礙物。
 - **多源 BFS**：把所有起點同時以距離 0 放入佇列，求每點到「最近起點」的距離，例如火勢蔓延、多個高鐵站。
 - **路徑還原**：更新 dist\[v\] 時同時記錄 par\[v\] = u，最後從終點沿 par 往回走。
@@ -632,6 +634,8 @@ int cnt = 0;                      // 目前找到幾個連通塊
 for (int i = 1; i <= n; i++)      // i = 每個點，還沒拜訪的就是新連通塊的起點
     if (!comp[i]) dfs(i, ++cnt);
 ```
+
+**動手操作**：[DFS 互動動畫](https://claude.ai/artifact/T1ENzn5fmyvyHyoBYWYEpe#dfs)。可以看到遞迴堆疊怎麼長高、縮回，以及 tin、tout 怎麼一個一個填上去。樹邊和回邊用不同的線條標出來。
 
 - **時間戳性質**：在 DFS 樹上，u 是 v 的祖先若且唯若 tin\[u\] ≤ tin\[v\] 且 tout\[v\] ≤ tout\[u\]。換句話說：把每個點看成時間區間 \[tin, tout\]，v 的區間被 u 的區間完全包住，u 就是 v 的祖先。
 
@@ -1203,6 +1207,8 @@ vector<ll> dijkstra(int s, int n) {
     return dist;
 }
 ```
+
+**動手操作**：[Dijkstra 互動動畫](https://claude.ai/artifact/T1ENzn5fmyvyHyoBYWYEpe#dijkstra)。可以自己改邊權，看堆積裡的項目怎麼進出、哪些變成過期項目被跳過，以及最短路樹怎麼長出來。
 
 複雜度 O(m log m)。`if (d > dist[u]) continue;` 不可省略，否則在特定測資下會退化。
 
