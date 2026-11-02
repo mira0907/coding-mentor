@@ -77,16 +77,16 @@
 鄰接串列模板（無向帶權圖）：
 
 ```cpp
-int n, m;
-vector<vector<pair<int,int>>> adj; // adj[u] = {(v, w), ...}
+int n, m;                            // n = 點數，m = 邊數
+vector<vector<pair<int,int>>> adj;   // adj[u] = u 的所有鄰居，每個元素 (v, w) 表示連到 v、邊權 w
 
 int main() {
     cin >> n >> m;
-    adj.assign(n + 1, {});
-    for (int i = 0; i < m; i++) {
-        int u, v, w;
+    adj.assign(n + 1, {});           // 點編號是 1 到 n，所以開 n + 1 格
+    for (int i = 0; i < m; i++) {    // i = 正在讀第幾條邊
+        int u, v, w;                 // 這條邊連接 u 和 v，邊權是 w
         cin >> u >> v >> w;
-        adj[u].push_back({v, w});
+        adj[u].push_back({v, w});    // 從 u 可以走到 v
         adj[v].push_back({u, w}); // 有向圖則刪除這行
     }
 }
@@ -99,20 +99,25 @@ int main() {
 **鏈式前向星模板**：所有邊放在同一組陣列裡。每個點只記自己的第一條邊，每條邊再記同一個起點的下一條邊。新邊插在最前面，所以走訪順序和輸入順序相反。
 
 ```cpp
-const int MAXN = 200005, MAXM = 400005;   // 無向圖的 MAXM 要開成邊數的兩倍
+const int MAXN = 200005, MAXM = 400005;   // MAXN = 點數上限，MAXM = 邊數上限（無向圖要開成邊數的兩倍）
+// head[u]：從 u 出發的第一條邊的編號（也就是最後加入的那條），-1 表示 u 沒有邊
+// nxt[i]：和第 i 條邊同一個起點的下一條邊的編號，-1 表示後面沒有了
+// to[i]：第 i 條邊的終點
+// wt[i]：第 i 條邊的邊權
+// cnt：目前已經存了幾條邊，同時也是下一條新邊的編號
 int head[MAXN], nxt[MAXM], to[MAXM], wt[MAXM], cnt = 0;
 
-void init(int n) { fill(head, head + n + 1, -1); cnt = 0; }
-void addEdge(int u, int v, int w) {        // 新增第 cnt 條邊 u → v
+void init(int n) { fill(head, head + n + 1, -1); cnt = 0; }   // n = 點數；每個點先設成沒有邊
+void addEdge(int u, int v, int w) {        // 新增第 cnt 條邊 u → v，邊權 w
     to[cnt] = v; wt[cnt] = w;
     nxt[cnt] = head[u];                    // 接在 u 原本的第一條邊前面
-    head[u] = cnt++;
+    head[u] = cnt++;                       // u 的第一條邊改成這條新邊，cnt 再加 1
 }
 
 // 無向邊：addEdge(u, v, w); addEdge(v, u, w);
-// 走訪 u 的所有鄰居：
+// 走訪 u 的所有鄰居：i 是目前這條邊的編號，沿著 nxt 一條接一條往下走
 for (int i = head[u]; i != -1; i = nxt[i]) {
-    int v = to[i], w = wt[i];
+    int v = to[i], w = wt[i];              // v = 這條邊通往的鄰居，w = 這條邊的邊權
     // 第 i 條邊的反向邊是第 i ^ 1 條
 }
 ```
@@ -146,8 +151,8 @@ for (int i = head[u]; i != -1; i = nxt[i]) {
 **讀入加速**：m = 10⁶ 條邊時，沒加速的 cin 可能就要 1 秒以上。main 開頭加上這兩行，之後不要和 scanf、printf 混用。輸出大量資料時用 `'\n'`，不要用 `endl`，因為 endl 每次都會清空緩衝區。
 
 ```cpp
-ios::sync_with_stdio(false);
-cin.tie(nullptr);
+ios::sync_with_stdio(false);   // 關掉 cin 和 scanf 之間的同步，讀入變快
+cin.tie(nullptr);              // 每次讀入前不再自動清空 cout 的緩衝區
 ```
 
 ### 範例 1-A 握手統計（基礎）
@@ -177,17 +182,17 @@ cin.tie(nullptr);
 using namespace std;
 int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
-    int n, m;
+    int n, m;                        // n = 人數（點數），m = 握手次數（邊數）
     cin >> n >> m;
-    vector<int> deg(n + 1, 0);
-    for (int i = 0; i < m; i++) {
-        int u, v;
+    vector<int> deg(n + 1, 0);       // deg[i] = 第 i 個人握了幾次手，也就是點 i 的度數
+    for (int i = 0; i < m; i++) {    // i = 正在讀第幾次握手
+        int u, v;                    // 這次握手的兩個人
         cin >> u >> v;
         deg[u]++; deg[v]++;          // 無向邊兩端各加一
     }
-    int odd = 0;
-    for (int i = 1; i <= n; i++) {
-        cout << deg[i] << " \n"[i == n];
+    int odd = 0;                     // 握手次數是奇數的人數
+    for (int i = 1; i <= n; i++) {   // i = 目前輸出的是第幾個人
+        cout << deg[i] << " \n"[i == n];   // 最後一個人後面換行，其他人後面接空白
         if (deg[i] % 2 == 1) odd++;
     }
     cout << odd << "\n";
@@ -227,31 +232,47 @@ int main() {
 using namespace std;
 int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
-    int n, m;
+    int n, m;                                  // n = 點數，m = 邊數
     cin >> n >> m;
-    vector<pair<int,int>> edges(m);
-    vector<int> deg(n + 1, 0);
+    vector<pair<int,int>> edges(m);            // edges[i] = 第 i 條邊的兩個端點 (u, v)
+    vector<int> deg(n + 1, 0);                 // deg[x] = 點 x 的度數
+    // auto& 讓 u、v 直接代表 edges 裡的那一格，讀進來的值才會存回 edges
     for (auto& [u, v] : edges) { cin >> u >> v; deg[u]++; deg[v]++; }
     // 依 (度數, 編號) 定向：從「小」指向「大」
+    // less_(a, b)：a 是否排在 b 前面。度數小的在前，度數相同時編號小的在前
     auto less_ = [&](int a, int b) {
         return deg[a] != deg[b] ? deg[a] < deg[b] : a < b;
     };
-    vector<vector<int>> out(n + 1);
+    vector<vector<int>> out(n + 1);            // out[x] = 定向後從 x 指出去的點
     for (auto [u, v] : edges) {
         if (less_(u, v)) out[u].push_back(v);
         else out[v].push_back(u);
     }
-    vector<int> mark(n + 1, 0);
-    long long tri = 0;
-    for (int u = 1; u <= n; u++) {
+    vector<int> mark(n + 1, 0);                // mark[x] == u 代表 x 是目前這個 u 的出鄰居
+    long long tri = 0;                         // 三角形的個數
+    for (int u = 1; u <= n; u++) {             // u = 三角形裡排序最前面的那個點
         for (int v : out[u]) mark[v] = u;          // 標記 u 的出鄰居
-        for (int v : out[u])
-            for (int w : out[v])
+        for (int v : out[u])                       // v = u 指向的點
+            for (int w : out[v])                   // w = v 指向的點
                 if (mark[w] == u) tri++;           // u→v→w 且 u→w
     }
     cout << tri << "\n";
 }
 ```
+
+**小補充：C++ 裡的 &**：本題的 `for (auto& [u, v] : edges)` 如果少了 &，u、v 只是複本，讀進來的值不會存回 edges，edges 會全是 0。後面的 `for (auto [u, v] : edges)` 只讀不改，用複製就可以。
+
+| 寫法 | 意思 | 例子 |
+| --- | --- | --- |
+| `auto& x : v` | 參考：x 就是 v 裡那一格本身，改 x 等於改 v | `for (auto& [u, v] : edges) cin >> u >> v;` |
+| `const auto& x : v` | 唯讀參考：不複製，也不能改 | `for (const auto& row : grid)` |
+| `vector<int>& a` 當參數 | 傳參考：不複製整個陣列，函式裡改了，外面也會變 | `void dfs(int u, vector<vector<int>>& g)` |
+| `[&]` | lambda 用參考捕獲外面的變數 | 本題的 `less_` 直接用到 `deg` |
+| `&x` | 取 x 的位址 | `int* p = &x;`、`scanf("%d", &x)` |
+| `a & b` | 位元 AND | `x & 1` 判斷奇偶、`x & -x` 取最低位的 1 |
+| `a && b` | 邏輯 AND，前面為假就不算後面 | `if (i < n && a[i] > 0)` |
+
+判別口訣：& 接在型別後面是參考，寫在變數前面是取址，夾在兩個值中間是位元 AND。
 
 ### 第一章 觀念檢測
 
@@ -288,14 +309,16 @@ BFS 與 DFS 都是 O(n + m)；BFS 能求無權圖最短路，DFS 則是拓撲排
 BFS 用佇列依「距離起點的層數」由近到遠擴展。因為同一層的點全部出佇列後才輪到下一層，第一次抵達某點時的層數就是它的最短距離（各邊權重相同時）。
 
 ```cpp
+// s = 起點，adj[u] = u 的所有鄰居
+// 回傳 dist：dist[v] = 從 s 到 v 最少要走幾條邊，-1 表示走不到
 vector<int> bfs(int s, const vector<vector<int>>& adj) {
-    int n = adj.size();
-    vector<int> dist(n, -1);
-    queue<int> q;
+    int n = adj.size();                // adj 的格數（點編號上限 + 1）
+    vector<int> dist(n, -1);           // dist[v] = 起點到 v 的距離，-1 表示還沒發現
+    queue<int> q;                      // 等待處理的點，依距離由近到遠排隊
     dist[s] = 0; q.push(s);
     while (!q.empty()) {
-        int u = q.front(); q.pop();
-        for (int v : adj[u]) {
+        int u = q.front(); q.pop();    // u = 目前處理的點
+        for (int v : adj[u]) {         // v = u 的每個鄰居
             if (dist[v] != -1) continue;
             dist[v] = dist[u] + 1;   // 入佇列時就標記，避免重複入列
             q.push(v);
@@ -332,25 +355,50 @@ vector<int> bfs(int s, const vector<vector<int>>& adj) {
 DFS 沿一條路走到底再回頭，常用於數連通塊、判環、樹上計算。
 
 ```cpp
-vector<vector<int>> adj;
+vector<vector<int>> adj;          // adj[u] = u 的所有鄰居
+// tin[u]：第一次進入 u 的時間戳
+// tout[u]：離開 u 的時間戳
+// comp[u]：u 屬於第幾個連通塊，0 表示還沒拜訪
 vector<int> tin, tout, comp;
-int timer_ = 0;
+int timer_ = 0;                   // 時間戳計數器，每進入或離開一個點就加 1
 
-void dfs(int u, int c) {
+void dfs(int u, int c) {          // u = 目前的點，c = 目前連通塊的編號
     comp[u] = c;
     tin[u] = ++timer_;            // 進入時間戳
-    for (int v : adj[u])
+    for (int v : adj[u])          // v = u 的每個鄰居
         if (!comp[v]) dfs(v, c);
     tout[u] = ++timer_;           // 離開時間戳
 }
 
 // 數連通塊：
-int cnt = 0;
-for (int i = 1; i <= n; i++)
+int cnt = 0;                      // 目前找到幾個連通塊
+for (int i = 1; i <= n; i++)      // i = 每個點，還沒拜訪的就是新連通塊的起點
     if (!comp[i]) dfs(i, ++cnt);
 ```
 
-- **時間戳性質**：在 DFS 樹上，u 是 v 的祖先若且唯若 tin\[u\] ≤ tin\[v\] 且 tout\[v\] ≤ tout\[u\]。這是樹序列化（Euler Tour）的基礎，可把子樹變成一段連續區間。
+- **時間戳性質**：在 DFS 樹上，u 是 v 的祖先若且唯若 tin\[u\] ≤ tin\[v\] 且 tout\[v\] ≤ tout\[u\]。換句話說：把每個點看成時間區間 \[tin, tout\]，v 的區間被 u 的區間完全包住，u 就是 v 的祖先。
+
+  **為什麼成立**：DFS 進入 u 時記下 tin\[u\]，要等 u 的整棵子樹都走完，才回到 u 記下 tout\[u\]。所以 u 子樹裡每個點的進入與離開，都發生在 u 的進入與離開之間。反過來，若 v 不在 u 的子樹裡，DFS 一定是先完全離開其中一點，才進入另一點，兩個區間互不相交。任兩點的區間只有「包含」或「不相交」兩種關係，不會部分重疊，就像配對好的括號。
+
+  **小例子**：樹的邊為 1–2、1–3、2–4，從 1 開始 DFS，鄰居依編號由小到大。
+
+  ```text
+  進入1(1) 進入2(2) 進入4(3) 離開4(4) 離開2(5) 進入3(6) 離開3(7) 離開1(8)
+  ```
+
+  | 點 | tin | tout | 區間 |
+  | --- | --- | --- | --- |
+  | 1 | 1 | 8 | \[1, 8\] |
+  | 2 | 2 | 5 | \[2, 5\] |
+  | 3 | 6 | 7 | \[6, 7\] |
+  | 4 | 3 | 4 | \[3, 4\] |
+  - 2 是 4 的祖先：\[3, 4\] 被 \[2, 5\] 包住。
+  - 3 不是 4 的祖先：\[3, 4\] 和 \[6, 7\] 不相交。
+  - 1 是所有點的祖先：\[1, 8\] 包住所有區間。
+
+  **怎麼用**：建好時間戳後，判斷「u 是否為 v 的祖先」只要比較兩組數字，O(1)。注意 u = v 時條件也成立，題目若不把自己算祖先要另外排除。
+
+  **和樹序列化（Euler Tour）的關係**：若只在「進入」時讓計數器加 1，u 的子樹會剛好佔用編號 tin\[u\] 到 tin\[u\] + sz\[u\] − 1（sz\[u\] 是子樹大小）這一段連續區間。於是「子樹加值」「子樹求和」就變成陣列上的區間操作，可以直接套線段樹或 BIT。
 - **有向圖判環**：用三色標記（0 未拜訪、1 在遞迴堆疊中、2 已完成）。若走到顏色為 1 的點（回邊），圖中有環。
 - **無向圖判環**：走到已拜訪且不是父節點的點就有環；有重邊時要用「來時的邊編號」而不是「父節點」判斷。
 - **遞迴深度**：n = 10⁵ 的鏈狀圖在部分平台會堆疊溢位，可改用顯式 stack 或 BFS 序。
@@ -370,15 +418,15 @@ for (int i = 1; i <= n; i++)
 
 ```cpp
 // 沿用上面的 adj、tin、tout、comp、timer_
-// 堆疊存 (點, 下一個要看的鄰居是第幾個)
+// s = 這次 DFS 的起點，c = 這個連通塊的編號
 void dfsIter(int s, int c) {
-    vector<pair<int,int>> st;
+    vector<pair<int,int>> st;          // 模擬遞迴的堆疊，每格存 (點, 下一個要看的鄰居是第幾個)
     comp[s] = c; tin[s] = ++timer_;
     st.push_back({s, 0});
     while (!st.empty()) {
-        auto& [u, i] = st.back();
+        auto& [u, i] = st.back();      // u = 堆疊頂端的點，i = u 下一個要看的鄰居索引
         if (i < (int)adj[u].size()) {
-            int v = adj[u][i++];
+            int v = adj[u][i++];       // v = u 的第 i 個鄰居，看完後 i 加 1
             if (!comp[v]) {
                 comp[v] = c; tin[v] = ++timer_;
                 st.push_back({v, 0});      // push_back 之後 u、i 這兩個參照就失效了
@@ -430,17 +478,19 @@ N × N 的棋盤上，騎士每步走「日」字（一個方向 2 格、另一�
 #include <bits/stdc++.h>
 using namespace std;
 int main() {
-    int N, sx, sy, tx, ty;
+    int N, sx, sy, tx, ty;             // N = 棋盤邊長，(sx, sy) = 起點，(tx, ty) = 終點
     cin >> N >> sx >> sy >> tx >> ty;
+    // (dx[d], dy[d]) = 騎士第 d 種走法的位移，共 8 種
     int dx[] = {1, 2, 2, 1, -1, -2, -2, -1};
     int dy[] = {2, 1, -1, -2, -2, -1, 1, 2};
+    // dist[x][y] = 走到 (x, y) 的最少步數，-1 表示還沒走到
     vector<vector<int>> dist(N + 1, vector<int>(N + 1, -1));
-    queue<pair<int,int>> q;
+    queue<pair<int,int>> q;            // 等待處理的格子 (x, y)
     dist[sx][sy] = 0; q.push({sx, sy});
     while (!q.empty()) {
-        auto [x, y] = q.front(); q.pop();
-        for (int d = 0; d < 8; d++) {
-            int nx = x + dx[d], ny = y + dy[d];
+        auto [x, y] = q.front(); q.pop();         // (x, y) = 目前處理的格子
+        for (int d = 0; d < 8; d++) {             // d = 第幾種走法
+            int nx = x + dx[d], ny = y + dy[d];   // (nx, ny) = 走一步後的格子
             if (nx < 1 || nx > N || ny < 1 || ny > N || dist[nx][ny] != -1) continue;
             dist[nx][ny] = dist[x][y] + 1;
             q.push({nx, ny});
@@ -484,21 +534,22 @@ K = 0 時只能繞 S 形，需要 13 步；K = 1 時打破右下角旁邊那面�
 using namespace std;
 int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
-    int R, C, K;
+    int R, C, K;                       // R、C = 迷宮的列數和行數，K = 最多能打破幾面牆
     cin >> R >> C >> K;
-    vector<string> g(R);
-    for (auto& s : g) cin >> s;
+    vector<string> g(R);               // g[x][y] = 第 x 列第 y 行的格子，'.' 是通道、'#' 是牆
+    for (auto& s : g) cin >> s;        // s = g 的每一列，用參考才能直接讀進 g
     // 狀態 (x, y, 已打破幾面牆)，攤平成一維陣列
+    // id(x, y, k) = 狀態 (x, y, k) 在一維陣列裡的位置
     auto id = [&](int x, int y, int k) { return (x * C + y) * (K + 1) + k; };
-    vector<int> dist(R * C * (K + 1), -1);
-    queue<array<int,3>> q;
+    vector<int> dist(R * C * (K + 1), -1);   // dist[位置] = 走到這個狀態的最少步數，-1 表示還沒走到
+    queue<array<int,3>> q;             // 等待處理的狀態 {x, y, k}
     dist[id(0, 0, 0)] = 0; q.push({0, 0, 0});
-    int dx[] = {1, -1, 0, 0}, dy[] = {0, 0, 1, -1};
+    int dx[] = {1, -1, 0, 0}, dy[] = {0, 0, 1, -1};   // 上下左右四個方向的位移
     while (!q.empty()) {
-        auto [x, y, k] = q.front(); q.pop();
+        auto [x, y, k] = q.front(); q.pop();   // 目前在 (x, y)，已經打破 k 面牆
         if (x == R - 1 && y == C - 1) { cout << dist[id(x, y, k)] << "\n"; return 0; }
-        for (int d = 0; d < 4; d++) {
-            int nx = x + dx[d], ny = y + dy[d];
+        for (int d = 0; d < 4; d++) {          // d = 第幾個方向
+            int nx = x + dx[d], ny = y + dy[d];    // (nx, ny) = 下一格
             if (nx < 0 || nx >= R || ny < 0 || ny >= C) continue;
             int nk = k + (g[nx][ny] == '#');       // 走進牆就要打破一次
             if (nk > K || dist[id(nx, ny, nk)] != -1) continue;
@@ -558,17 +609,19 @@ int main() {
 
 ```cpp
 using ll = long long;
-const ll INF = 1e18;
-vector<vector<pair<int,int>>> adj; // (v, w)
+const ll INF = 1e18;                   // 代表「還沒走到」的極大距離
+vector<vector<pair<int,int>>> adj;     // adj[u] = u 的所有出邊，每個元素 (v, w) 表示 u → v、邊權 w
 
+// s = 起點，n = 點數；回傳 dist[v] = s 到 v 的最短距離，走不到時為 INF
 vector<ll> dijkstra(int s, int n) {
-    vector<ll> dist(n + 1, INF);
+    vector<ll> dist(n + 1, INF);       // dist[v] = 目前找到的 s 到 v 最短距離
+    // pq 存 (距離, 點)，greater<> 讓距離最小的先出來
     priority_queue<pair<ll,int>, vector<pair<ll,int>>, greater<>> pq;
     dist[s] = 0; pq.push({0, s});
     while (!pq.empty()) {
-        auto [d, u] = pq.top(); pq.pop();
+        auto [d, u] = pq.top(); pq.pop();   // u = 取出的點，d = 放進堆積時它的距離
         if (d > dist[u]) continue;          // 過期的項目，跳過
-        for (auto [v, w] : adj[u]) {
+        for (auto [v, w] : adj[u]) {        // 每條邊 u → v，邊權 w
             if (dist[u] + w < dist[v]) {
                 dist[v] = dist[u] + w;
                 pq.push({dist[v], v});
@@ -610,15 +663,16 @@ vector<ll> dijkstra(int s, int n) {
 對所有邊鬆弛 n − 1 輪。最短路最多有 n − 1 條邊，所以 n − 1 輪後必定收斂；若第 n 輪仍能鬆弛，代表從起點可達的地方有負環。
 
 ```cpp
-struct Edge { int u, v; ll w; };
+struct Edge { int u, v; ll w; };            // 一條邊 u → v，邊權 w
 
+// s = 起點，n = 點數，edges = 所有的邊，dist = 存放答案（s 到每個點的最短距離）
 // 回傳 false 表示存在可達負環
 bool bellmanFord(int s, int n, const vector<Edge>& edges, vector<ll>& dist) {
     dist.assign(n + 1, INF);
     dist[s] = 0;
-    for (int i = 1; i <= n; i++) {
-        bool changed = false;
-        for (auto& e : edges) {
+    for (int i = 1; i <= n; i++) {          // i = 第幾輪
+        bool changed = false;               // 這一輪有沒有任何 dist 被更新
+        for (auto& e : edges) {             // e = 目前要鬆弛的邊
             if (dist[e.u] != INF && dist[e.u] + e.w < dist[e.v]) {
                 dist[e.v] = dist[e.u] + e.w;
                 changed = true;
@@ -646,10 +700,11 @@ bool bellmanFord(int s, int n, const vector<Edge>& edges, vector<ll>& dist) {
 dp\[k\]\[i\]\[j\] 表示只用編號 ≤ k 的點當中繼時 i 到 j 的最短路。第一維可以壓掉，但 **k 必須是最外層迴圈**。
 
 ```cpp
-// d[i][i] = 0，有邊則 d[u][v] = min(d[u][v], w)，其餘為 INF
-for (int k = 1; k <= n; k++)
-    for (int i = 1; i <= n; i++)
-        for (int j = 1; j <= n; j++)
+// d[i][j] = 目前已知 i 到 j 的最短距離
+// 初始化：d[i][i] = 0，有邊則 d[u][v] = min(d[u][v], w)，其餘為 INF
+for (int k = 1; k <= n; k++)                // k = 這一輪新開放可以當中繼的點
+    for (int i = 1; i <= n; i++)            // i = 起點
+        for (int j = 1; j <= n; j++)        // j = 終點
             if (d[i][k] < INF && d[k][j] < INF)
                 d[i][j] = min(d[i][j], d[i][k] + d[k][j]);
 // 跑完後若 d[i][i] < 0，代表 i 在負環上
@@ -662,19 +717,21 @@ for (int k = 1; k <= n; k++)
 **路徑還原**：多開一個 nxt 表，`nxt[i][j]` 是從 i 走到 j 時的下一個點。
 
 ```cpp
+// d[i][j] = 目前已知 i 到 j 的最短距離
+// nxt[i][j] = 從 i 走到 j 的最短路上，i 的下一個點
 // 初始化：d[i][i] = 0、nxt[i][i] = i
 // 有邊 u → v 時，d[u][v] 取重邊中最小的 w，並令 nxt[u][v] = v
-for (int k = 1; k <= n; k++)
-    for (int i = 1; i <= n; i++)
-        for (int j = 1; j <= n; j++)
+for (int k = 1; k <= n; k++)                // k = 中繼點
+    for (int i = 1; i <= n; i++)            // i = 起點
+        for (int j = 1; j <= n; j++)        // j = 終點
             if (d[i][k] < INF && d[k][j] < INF && d[i][k] + d[k][j] < d[i][j]) {
                 d[i][j] = d[i][k] + d[k][j];
                 nxt[i][j] = nxt[i][k];      // 先朝 k 的方向走
             }
 
 // 還原 i 到 j 的路徑（需要 d[i][j] < INF）
-vector<int> path;
-for (int u = i; u != j; u = nxt[u][j]) path.push_back(u);
+vector<int> path;                           // path = 從 i 到 j 依序經過的點
+for (int u = i; u != j; u = nxt[u][j]) path.push_back(u);   // u = 目前走到的點
 path.push_back(j);
 ```
 
@@ -682,9 +739,9 @@ path.push_back(j);
 
 ```cpp
 bitset<2001> reach[2001];   // reach[i][j]：i 能不能到 j；先設 reach[i][i] = 1 與每條邊
-for (int k = 1; k <= n; k++)
-    for (int i = 1; i <= n; i++)
-        if (reach[i][k]) reach[i] |= reach[k];
+for (int k = 1; k <= n; k++)                     // k = 中繼點
+    for (int i = 1; i <= n; i++)                 // i = 起點
+        if (reach[i][k]) reach[i] |= reach[k];   // i 到得了 k，k 到得了的點 i 也都到得了
 ```
 
 **有負環時小心溢位**：有負環時，d 的值每一輪都可能變得更負，很快就會超出 long long。題目可能有負環時，要在值低於某個下限時截斷，或先用 3.3 節的方法判斷。
@@ -694,13 +751,15 @@ for (int k = 1; k <= n; k++)
 邊權只有 0 或 1 時，用雙端佇列：權重 0 的邊把點放前面，權重 1 放後面。佇列始終保持「前段距離 d、後段距離 d + 1」，等價於不用 heap 的 Dijkstra，複雜度 O(n + m)。
 
 ```cpp
+// s = 起點；adj[u] 存 (v, w)，w 只會是 0 或 1；dist[v] = s 到 v 的最短距離，初始為 INF
+// dq = 雙端佇列，前段的距離是 d、後段是 d + 1
 deque<int> dq; dist[s] = 0; dq.push_back(s);
 while (!dq.empty()) {
-    int u = dq.front(); dq.pop_front();
-    for (auto [v, w] : adj[u]) {
+    int u = dq.front(); dq.pop_front();       // u = 目前距離最小的點
+    for (auto [v, w] : adj[u]) {              // 每條邊 u → v，邊權 w
         if (dist[u] + w < dist[v]) {
             dist[v] = dist[u] + w;
-            if (w == 0) dq.push_front(v); else dq.push_back(v);
+            if (w == 0) dq.push_front(v); else dq.push_back(v);   // 權重 0 放前面，權重 1 放後面
         }
     }
 }
@@ -764,17 +823,17 @@ while (!dq.empty()) {
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
-const ll INF = LLONG_MAX / 4;
+const ll INF = LLONG_MAX / 4;                 // 代表走不到；除以 4 留下空間，避免加上邊權時溢位
 int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
-    int n, m;
+    int n, m;                                 // n = 點數，m = 邊數
     cin >> n >> m;
-    vector<array<ll,3>> e(m);
+    vector<array<ll,3>> e(m);                 // e[i] = 第 i 條有向邊 {u, v, w}：u → v，邊權 w
     for (auto& [u, v, w] : e) cin >> u >> v >> w;
-    vector<ll> dist(n + 1, INF);
+    vector<ll> dist(n + 1, INF);              // dist[v] = 點 1 到 v 目前的最短距離
     dist[1] = 0;
-    for (int round = 1; round <= n; round++) {
-        bool changed = false;
+    for (int round = 1; round <= n; round++) {   // round = 第幾輪鬆弛
+        bool changed = false;                 // 這一輪有沒有任何距離被更新
         for (auto [u, v, w] : e) {
             if (dist[u] == INF) continue;          // 尚不可達的點不能拿來鬆弛
             if (dist[u] + w < dist[v]) {
@@ -783,9 +842,9 @@ int main() {
             }
         }
         if (!changed) break;
-        if (round == n) { cout << "NEGATIVE CYCLE\n"; return 0; }
+        if (round == n) { cout << "NEGATIVE CYCLE\n"; return 0; }   // 第 n 輪還在更新 → 有負環
     }
-    for (int i = 1; i <= n; i++) {
+    for (int i = 1; i <= n; i++) {            // i = 要輸出的點
         if (dist[i] == INF) cout << "INF";
         else cout << dist[i];
         cout << " \n"[i == n];
@@ -826,26 +885,27 @@ int main() {
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
-const ll INF = 1e18;
+const ll INF = 1e18;                          // 代表走不到
 int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
-    int n, m, K;
+    int n, m, K;                              // n = 城市數，m = 航線數，K = 優惠券張數
     cin >> n >> m >> K;
-    vector<vector<pair<int,int>>> adj(n + 1);
-    for (int i = 0; i < m; i++) {
-        int u, v, w;
+    vector<vector<pair<int,int>>> adj(n + 1); // adj[u] = (v, w)：u 和 v 之間有航線，票價 w
+    for (int i = 0; i < m; i++) {             // i = 正在讀第幾條航線
+        int u, v, w;                          // 這條航線連接 u、v，票價 w
         cin >> u >> v >> w;
         adj[u].push_back({v, w});
         adj[v].push_back({u, w});
     }
     // dist[v][j] = 到達 v、已用 j 張優惠券的最小花費
     vector<vector<ll>> dist(n + 1, vector<ll>(K + 1, INF));
+    // pq 存 (花費, 城市, 已用張數)，花費最小的先出來
     priority_queue<tuple<ll,int,int>, vector<tuple<ll,int,int>>, greater<>> pq;
     dist[1][0] = 0; pq.push({0, 1, 0});
     while (!pq.empty()) {
-        auto [d, u, j] = pq.top(); pq.pop();
+        auto [d, u, j] = pq.top(); pq.pop();  // 在城市 u、已用 j 張券、花費 d
         if (d > dist[u][j]) continue;
-        for (auto [v, w] : adj[u]) {
+        for (auto [v, w] : adj[u]) {          // 從 u 飛到 v，票價 w
             if (d + w < dist[v][j]) {                       // 正常付費
                 dist[v][j] = d + w; pq.push({dist[v][j], v, j});
             }
@@ -854,7 +914,7 @@ int main() {
             }
         }
     }
-    ll ans = *min_element(dist[n].begin(), dist[n].end());
+    ll ans = *min_element(dist[n].begin(), dist[n].end());   // 到達 n 時用幾張券都可以，取最小
     cout << (ans == INF ? -1 : ans) << "\n";
 }
 ```
@@ -895,11 +955,14 @@ int main() {
 
 ```cpp
 struct DSU {
+    // p[x]：x 的父節點，p[x] == x 代表 x 是這一組的代表元（根）
+    // sz[x]：以 x 為根的這一組有幾個元素，只有根的值有意義
     vector<int> p, sz;
-    DSU(int n) : p(n + 1), sz(n + 1, 1) { iota(p.begin(), p.end(), 0); }
+    DSU(int n) : p(n + 1), sz(n + 1, 1) { iota(p.begin(), p.end(), 0); }   // n = 元素個數；一開始每個元素自成一組
+    // find(x)：回傳 x 所在組的根，並把沿路的點直接接到根上
     int find(int x) { return p[x] == x ? x : p[x] = find(p[x]); } // 路徑壓縮
-    bool unite(int a, int b) {
-        a = find(a); b = find(b);
+    bool unite(int a, int b) {              // 合併 a、b 所在的組
+        a = find(a); b = find(b);           // 之後 a、b 代表兩組各自的根
         if (a == b) return false;           // 已在同一組
         if (sz[a] < sz[b]) swap(a, b);      // 小的接到大的下面
         p[b] = a; sz[a] += sz[b];
@@ -939,12 +1002,12 @@ struct DSU {
 **帶權並查集模板**：`w[x]` 是「x 的值減去父節點的值」。壓縮時要把一路上的差累加起來，合併時要算出兩個根之間的差。
 
 ```cpp
-vector<int> p;
+vector<int> p;                // p[x] = x 的父節點，p[x] == x 代表 x 是根
 vector<long long> w;          // w[x] = x 的值 − 父節點的值
 
-int find(int x) {
+int find(int x) {             // 回傳 x 的根，並把 w[x] 更新成「x 的值 − 根的值」
     if (p[x] == x) return x;
-    int r = find(p[x]);       // 先處理父節點：之後 w[p[x]] 就是父節點到根的差
+    int r = find(p[x]);       // r = 根；先處理父節點，之後 w[p[x]] 就是父節點到根的差
     w[x] += w[p[x]];
     p[x] = r;                 // x 直接指向根
     return r;
@@ -952,8 +1015,8 @@ int find(int x) {
 
 // 加入條件 val[a] − val[b] = c；回傳 false 代表和之前的條件矛盾
 bool unite(int a, int b, long long c) {
-    int ra = find(a), rb = find(b);
-    if (ra == rb) return w[a] - w[b] == c;
+    int ra = find(a), rb = find(b);           // ra、rb = a、b 各自的根
+    if (ra == rb) return w[a] - w[b] == c;    // 已在同一組：檢查已知的差是否等於 c
     p[ra] = rb;
     w[ra] = c + w[b] - w[a];
     return true;
@@ -968,13 +1031,14 @@ bool unite(int a, int b, long long c) {
 把邊依權重由小到大排序，依序加入；若兩端已連通則跳過（會形成環）。
 
 ```cpp
-struct E { int u, v; long long w; };
+struct E { int u, v; long long w; };        // 一條邊 u–v，邊權 w
 
+// n = 點數，edges = 所有的邊；回傳 MST 的總邊權，圖不連通時回傳 -1
 long long kruskal(int n, vector<E>& edges) {
-    sort(edges.begin(), edges.end(), [](const E& a, const E& b){ return a.w < b.w; });
-    DSU dsu(n);
-    long long total = 0; int used = 0;
-    for (auto& e : edges)
+    sort(edges.begin(), edges.end(), [](const E& a, const E& b){ return a.w < b.w; });   // 邊權由小到大
+    DSU dsu(n);                             // 記錄哪些點已經連在一起
+    long long total = 0; int used = 0;      // total = 已選邊的權重和，used = 已選幾條邊
+    for (auto& e : edges)                   // e = 依序處理的邊
         if (dsu.unite(e.u, e.v)) { total += e.w; used++; }
     return used == n - 1 ? total : -1;     // -1 表示圖不連通
 }
@@ -1011,14 +1075,15 @@ long long kruskal(int n, vector<E>& edges) {
 **稠密圖的 O(n²) 模板**：n = 5000 的完全圖約有 1.25×10⁷ 條邊，Kruskal 光排序就很慢。這個寫法不用排序，本機實測 n = 5000 只要約 0.03 秒。
 
 ```cpp
-// 稠密圖 Prim，O(n²)：w[u][v] 是邊權，沒有邊時為 INF
+// 稠密圖 Prim，O(n²)：n = 點數，w[u][v] 是邊權，沒有邊時為 INF
+// 回傳 MST 的總邊權，圖不連通時回傳 -1
 long long primDense(int n, const vector<vector<long long>>& w) {
     vector<long long> best(n + 1, INF);   // best[v] = v 連到目前這棵樹最便宜的邊
-    vector<bool> in(n + 1, false);
-    best[1] = 0;
-    long long total = 0;
-    for (int it = 0; it < n; it++) {
-        int u = -1;
+    vector<bool> in(n + 1, false);        // in[v] = v 是否已經加入樹
+    best[1] = 0;                          // 從點 1 開始長
+    long long total = 0;                  // 已加入的邊權總和
+    for (int it = 0; it < n; it++) {      // it = 第幾次加點，總共加 n 個點
+        int u = -1;                       // u = 這一輪要加入的點
         for (int v = 1; v <= n; v++)       // 找還沒加入、best 最小的點
             if (!in[v] && (u == -1 || best[v] < best[u])) u = v;
         if (best[u] == INF) return -1;     // 剩下的點連不到 → 圖不連通
@@ -1088,10 +1153,10 @@ n 個村莊都需要電。在村莊 i 蓋發電廠要花 c\_i；另有 m 條可�
 using namespace std;
 using ll = long long;
 struct DSU {
-    vector<int> p, sz;
-    DSU(int n) : p(n + 1), sz(n + 1, 1) { iota(p.begin(), p.end(), 0); }
-    int find(int x) { return p[x] == x ? x : p[x] = find(p[x]); }
-    bool unite(int a, int b) {
+    vector<int> p, sz;                   // p[x] = x 的父節點，sz[x] = 以 x 為根的組大小
+    DSU(int n) : p(n + 1), sz(n + 1, 1) { iota(p.begin(), p.end(), 0); }   // 元素編號 0 到 n
+    int find(int x) { return p[x] == x ? x : p[x] = find(p[x]); }       // 找 x 的根並路徑壓縮
+    bool unite(int a, int b) {           // 合併 a、b 所在的組，已經同組時回傳 false
         a = find(a); b = find(b);
         if (a == b) return false;
         if (sz[a] < sz[b]) swap(a, b);
@@ -1101,20 +1166,20 @@ struct DSU {
 };
 int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
-    int n, m;
+    int n, m;                            // n = 村莊數，m = 可以架設的電線數
     cin >> n >> m;
-    vector<array<ll,3>> e;              // (w, u, v)
-    for (int i = 1; i <= n; i++) {
-        ll c; cin >> c;
+    vector<array<ll,3>> e;              // 所有的邊，每個元素 (w, u, v)：u、v 之間的邊，花費 w
+    for (int i = 1; i <= n; i++) {       // i = 村莊編號
+        ll c; cin >> c;                  // c = 在村莊 i 蓋發電廠的花費
         e.push_back({c, 0, i});         // 虛擬發電廠 0 號點
     }
-    for (int i = 0; i < m; i++) {
-        ll u, v, w; cin >> u >> v >> w;
+    for (int i = 0; i < m; i++) {        // i = 正在讀第幾條電線
+        ll u, v, w; cin >> u >> v >> w;  // 電線連接村莊 u、v，花費 w
         e.push_back({w, u, v});
     }
-    sort(e.begin(), e.end());
+    sort(e.begin(), e.end());            // 依花費 w 由小到大排序
     DSU dsu(n);                          // 0..n 共 n+1 個點
-    ll total = 0;
+    ll total = 0;                        // 總花費
     for (auto [w, u, v] : e)
         if (dsu.unite(u, v)) total += w;
     cout << total << "\n";
@@ -1154,26 +1219,26 @@ int main() {
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
-vector<int> par;
+vector<int> par;                         // par[x] = x 的父節點，par[x] == x 代表 x 是根
 vector<ll> diff;                         // diff[x] = 值(x) − 值(par[x])
-int find(int x) {
+int find(int x) {                        // 回傳 x 的根，並把 diff[x] 更新成「值(x) − 值(根)」
     if (par[x] == x) return x;
-    int r = find(par[x]);
+    int r = find(par[x]);                // r = x 所在組的根
     diff[x] += diff[par[x]];             // 先把父節點壓縮到根，再累加
     par[x] = r;
     return r;
 }
 int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
-    int n, m;
+    int n, m;                            // n = 帳戶數，m = 紀錄數
     cin >> n >> m;
     par.resize(n + 1); iota(par.begin(), par.end(), 0);
     diff.assign(n + 1, 0);
-    for (int i = 1; i <= m; i++) {
-        int a, b; ll c;
+    for (int i = 1; i <= m; i++) {       // i = 第幾條紀錄
+        int a, b; ll c;                  // 這條紀錄說「帳戶 b 比帳戶 a 多 c」
         cin >> a >> b >> c;              // 值(b) − 值(a) = c
-        int ra = find(a), rb = find(b);
-        if (ra == rb) {
+        int ra = find(a), rb = find(b);  // ra、rb = a、b 各自的根
+        if (ra == rb) {                  // 已在同一組：用已知的差檢查是否矛盾
             if (diff[b] - diff[a] != c) { cout << i << "\n"; return 0; }
         } else {
             // 讓 rb 接到 ra 底下：值(rb) − 值(ra) = c + diff[a] − diff[b]
@@ -1230,17 +1295,19 @@ int main() {
 反覆取出入度為 0 的點，放入答案，並減少其鄰居的入度。若最後取出的點數少於 n，剩下的點都在環上或被環擋住，圖不是 DAG。
 
 ```cpp
+// n = 點數，adj[u] = u 指向的點；回傳拓撲序
 vector<int> topo(int n, const vector<vector<int>>& adj) {
+    // indeg[v]：v 還有幾條入邊沒被處理；order：算出來的拓撲序
     vector<int> indeg(n + 1, 0), order;
     for (int u = 1; u <= n; u++)
         for (int v : adj[u]) indeg[v]++;
-    queue<int> q;                      // 要字典序最小就改成 min-heap
+    queue<int> q;                      // q = 入度已經是 0、等著排進答案的點；要字典序最小就改成 min-heap
     for (int u = 1; u <= n; u++)
         if (indeg[u] == 0) q.push(u);
     while (!q.empty()) {
-        int u = q.front(); q.pop();
+        int u = q.front(); q.pop();    // u = 這一步排進答案的點
         order.push_back(u);
-        for (int v : adj[u])
+        for (int v : adj[u])           // v = u 指向的點，少了一條入邊
             if (--indeg[v] == 0) q.push(v);
     }
     return order;                      // order.size() < n → 有環
@@ -1272,13 +1339,15 @@ vector<int> topo(int n, const vector<vector<int>>& adj) {
 **模板**（同時判環）：
 
 ```cpp
-vector<vector<int>> adj;
-vector<int> color, order;      // color：0 未拜訪、1 在遞迴堆疊中、2 已完成
-bool hasCycle = false;
+vector<vector<int>> adj;       // adj[u] = u 指向的點
+// color[u]：0 未拜訪、1 在遞迴堆疊中、2 已完成
+// order：依「完成」的先後排列的點，反轉後就是拓撲序
+vector<int> color, order;
+bool hasCycle = false;         // 是否發現環
 
-void dfs(int u) {
+void dfs(int u) {              // u = 目前拜訪的點
     color[u] = 1;
-    for (int v : adj[u]) {
+    for (int v : adj[u]) {     // v = u 指向的點
         if (color[v] == 0) dfs(v);
         else if (color[v] == 1) hasCycle = true;   // 走回堆疊中的點 → 有環
     }
@@ -1304,11 +1373,12 @@ DAG 沒有環，所以狀態之間不會循環依賴，依拓撲序處理即可�
 
 ```cpp
 // 依拓撲序求從任意起點出發的最長路徑（邊數）
-vector<int> dp(n + 1, 0);
-for (int u : order)
-    for (int v : adj[u])
+// order = 拓撲序，adj[u] = u 指向的點
+vector<int> dp(n + 1, 0);              // dp[v] = 走到 v 為止的最長路徑有幾條邊
+for (int u : order)                    // u = 依拓撲序處理的點，此時 dp[u] 已經確定
+    for (int v : adj[u])               // v = u 的後繼，用 dp[u] 更新它
         dp[v] = max(dp[v], dp[u] + 1);
-int ans = *max_element(dp.begin(), dp.end());
+int ans = *max_element(dp.begin(), dp.end());   // 整張圖的最長路徑
 ```
 
 許多「看起來不是圖」的 DP 其實都是 DAG：狀態是點，轉移是邊。若轉移有環，則需要先用第六章的強連通分量縮點。
@@ -1324,10 +1394,11 @@ int ans = *max_element(dp.begin(), dp.end());
 
 ```cpp
 // 從 u 出發的最長路徑（邊數）；memo 初始為 -1
+// memo[u] = 已經算好的答案，-1 表示還沒算；adj[u] = u 指向的點
 int longest(int u) {
     if (memo[u] != -1) return memo[u];
-    int best = 0;
-    for (int v : adj[u]) best = max(best, longest(v) + 1);
+    int best = 0;                      // best = 目前找到從 u 出發的最長路徑
+    for (int v : adj[u]) best = max(best, longest(v) + 1);   // 先走 u → v，再接 v 之後的最長路
     return memo[u] = best;
 }
 ```
@@ -1373,23 +1444,23 @@ int longest(int u) {
 using namespace std;
 int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
-    int n, m;
+    int n, m;                              // n = 課程數，m = 先修關係數
     cin >> n >> m;
-    vector<vector<int>> adj(n + 1);
-    vector<int> indeg(n + 1, 0);
-    for (int i = 0; i < m; i++) {
-        int a, b; cin >> a >> b;
+    vector<vector<int>> adj(n + 1);        // adj[a] = 以 a 為先修的課程
+    vector<int> indeg(n + 1, 0);           // indeg[b] = b 還有幾門先修課沒修
+    for (int i = 0; i < m; i++) {          // i = 正在讀第幾個先修關係
+        int a, b; cin >> a >> b;           // 要先修 a 才能修 b
         adj[a].push_back(b); indeg[b]++;
     }
-    priority_queue<int, vector<int>, greater<int>> pq;   // 每次取編號最小
+    priority_queue<int, vector<int>, greater<int>> pq;   // pq = 現在可以修的課；每次取編號最小
     for (int i = 1; i <= n; i++) if (indeg[i] == 0) pq.push(i);
-    vector<int> order;
+    vector<int> order;                     // 選課順序
     while (!pq.empty()) {
-        int u = pq.top(); pq.pop();
+        int u = pq.top(); pq.pop();        // u = 現在可以修、編號最小的課
         order.push_back(u);
-        for (int v : adj[u]) if (--indeg[v] == 0) pq.push(v);
+        for (int v : adj[u]) if (--indeg[v] == 0) pq.push(v);   // v 的先修少了一門，修完了就能加入
     }
-    if ((int)order.size() < n) { cout << "IMPOSSIBLE\n"; return 0; }
+    if ((int)order.size() < n) { cout << "IMPOSSIBLE\n"; return 0; }   // 有課永遠修不到 → 先修關係有環
     for (int i = 0; i < n; i++) cout << order[i] << " \n"[i == n - 1];
 }
 ```
@@ -1425,19 +1496,19 @@ bitset 的聯集一次處理 64 個位元，每條邊花 n / 64 次運算，總�
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-const int MAXN = 30000;
+const int MAXN = 30000;                // 點數上限
 bitset<MAXN> reach[MAXN];          // reach[u] 的第 v 位 = u 能否到達 v（0-indexed）
 int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
-    int n, m;
+    int n, m;                          // n = 點數，m = 邊數
     cin >> n >> m;
-    vector<vector<int>> adj(n);
-    vector<int> indeg(n, 0);
-    for (int i = 0; i < m; i++) {
-        int a, b; cin >> a >> b; a--; b--;
+    vector<vector<int>> adj(n);        // adj[a] = a 指向的點（編號從 0 開始）
+    vector<int> indeg(n, 0);           // indeg[v] = v 還沒處理的入邊數
+    for (int i = 0; i < m; i++) {      // i = 正在讀第幾條邊
+        int a, b; cin >> a >> b; a--; b--;   // 邊 a → b，轉成從 0 開始編號
         adj[a].push_back(b); indeg[b]++;
     }
-    vector<int> order; queue<int> q;
+    vector<int> order; queue<int> q;   // order = 拓撲序；q = 入度已經是 0 的點
     for (int i = 0; i < n; i++) if (indeg[i] == 0) q.push(i);
     while (!q.empty()) {
         int u = q.front(); q.pop(); order.push_back(u);
@@ -1445,11 +1516,11 @@ int main() {
     }
     // 反拓撲序：處理 u 時，所有後繼都已算好
     for (int i = n - 1; i >= 0; i--) {
-        int u = order[i];
-        reach[u][u] = 1;
-        for (int v : adj[u]) reach[u] |= reach[v];
+        int u = order[i];              // u = 拓撲序中的第 i 個點，i 由後往前
+        reach[u][u] = 1;               // u 一定到得了自己
+        for (int v : adj[u]) reach[u] |= reach[v];   // v 到得了的點，u 也都到得了
     }
-    for (int i = 0; i < n; i++) cout << reach[i].count() << " \n"[i == n - 1];
+    for (int i = 0; i < n; i++) cout << reach[i].count() << " \n"[i == n - 1];   // count() = 到得了的點數
 }
 ```
 
@@ -1514,22 +1585,27 @@ int main() {
 有向圖中「互相可達」的極大點集稱為強連通分量。把每個 SCC 縮成一個點，得到的圖必定是 DAG，就能接上第五章的拓撲排序與 DP。
 
 ```cpp
+// n = 點數；timer_ = DFS 時間戳計數器；sccCnt = 目前找到幾個 SCC
 int n, timer_ = 0, sccCnt = 0;
-vector<vector<int>> adj;
+vector<vector<int>> adj;               // adj[u] = u 指向的點
+// dfn[u]：u 被拜訪的順序，0 表示還沒拜訪
+// low[u]：從 u 的子樹出發，最多經過一條非樹邊能到的最小 dfn
+// comp[u]：u 屬於第幾個 SCC
+// stk：還沒分進任何 SCC 的點，依拜訪順序堆起來
 vector<int> dfn, low, comp, stk;
-vector<bool> inStk;
+vector<bool> inStk;                    // inStk[u] = u 目前是否在 stk 裡
 
-void tarjan(int u) {
+void tarjan(int u) {                   // u = 目前拜訪的點
     dfn[u] = low[u] = ++timer_;
     stk.push_back(u); inStk[u] = true;
-    for (int v : adj[u]) {
-        if (!dfn[v]) { tarjan(v); low[u] = min(low[u], low[v]); }
-        else if (inStk[v]) low[u] = min(low[u], dfn[v]);
+    for (int v : adj[u]) {             // v = u 指向的點
+        if (!dfn[v]) { tarjan(v); low[u] = min(low[u], low[v]); }   // 樹邊：先處理 v
+        else if (inStk[v]) low[u] = min(low[u], dfn[v]);              // v 還在堆疊中：可以回到 v
     }
     if (low[u] == dfn[u]) {            // u 是此 SCC 的根
         ++sccCnt;
         while (true) {
-            int x = stk.back(); stk.pop_back();
+            int x = stk.back(); stk.pop_back();   // x = 屬於這個 SCC 的點
             inStk[x] = false; comp[x] = sccCnt;
             if (x == u) break;
         }
@@ -1560,21 +1636,24 @@ void tarjan(int u) {
 | 根 u 是割點 | 根在 DFS 樹上有至少兩個子節點 |
 
 ```cpp
-vector<vector<pair<int,int>>> g;   // (v, 邊編號)
+vector<vector<pair<int,int>>> g;   // g[u] = (v, 邊編號)：u 和 v 之間的邊
+// dfn[u]：u 被拜訪的順序；low[u]：u 的子樹最多經過一條非樹邊能回到的最小 dfn
+// isBridge[邊編號]：這條邊是不是橋；isCut[u]：u 是不是割點
+// timer_：時間戳計數器
 vector<int> dfn, low; vector<bool> isBridge, isCut; int timer_ = 0;
 
-void dfs(int u, int pe) {          // pe = 來時的邊編號
+void dfs(int u, int pe) {          // u = 目前的點，pe = 來時的邊編號（根為 -1）
     dfn[u] = low[u] = ++timer_;
-    int child = 0;
-    for (auto [v, id] : g[u]) {
+    int child = 0;                 // u 在 DFS 樹上有幾個子節點，判斷根是不是割點時用
+    for (auto [v, id] : g[u]) {    // v = 鄰居，id = 這條邊的編號
         if (id == pe) continue;      // 只跳過來時那條邊，重邊仍會處理
-        if (dfn[v]) { low[u] = min(low[u], dfn[v]); continue; }
+        if (dfn[v]) { low[u] = min(low[u], dfn[v]); continue; }   // 回邊
         dfs(v, id); child++;
         low[u] = min(low[u], low[v]);
         if (low[v] > dfn[u]) isBridge[id] = true;
         if (pe != -1 && low[v] >= dfn[u]) isCut[u] = true;
     }
-    if (pe == -1 && child >= 2) isCut[u] = true;
+    if (pe == -1 && child >= 2) isCut[u] = true;   // pe == -1 代表 u 是根
 }
 ```
 
@@ -1652,24 +1731,29 @@ n 個路口由 m 條雙向道路連接，可能有重邊。若封閉某條道路
 using namespace std;
 int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
-    int n, m;
+    int n, m;                                   // n = 路口數，m = 道路數
     cin >> n >> m;
-    vector<vector<pair<int,int>>> g(n + 1);     // (鄰居, 邊編號)
-    for (int i = 1; i <= m; i++) {
-        int u, v; cin >> u >> v;
+    vector<vector<pair<int,int>>> g(n + 1);     // g[u] = (鄰居, 邊編號)
+    for (int i = 1; i <= m; i++) {              // i = 道路編號
+        int u, v; cin >> u >> v;                // 第 i 條道路連接 u、v
         g[u].push_back({v, i}); g[v].push_back({u, i});
     }
+    // dfn[u]：u 被拜訪的順序，0 表示還沒拜訪
+    // low[u]：u 的子樹最多經過一條非樹邊能回到的最小 dfn
+    // pe[u]：走到 u 時用的那條邊的編號，根為 0
+    // it[u]：u 已經處理到第幾個鄰居
+    // bridges：找到的橋（道路編號）
     vector<int> dfn(n + 1, 0), low(n + 1, 0), pe(n + 1, 0), it(n + 1, 0), bridges;
-    int timer_ = 0;
+    int timer_ = 0;                             // 時間戳計數器
     // 用顯式堆疊模擬遞迴 DFS：it[u] 記錄 u 已處理到第幾個鄰居
-    for (int s = 1; s <= n; s++) {
+    for (int s = 1; s <= n; s++) {              // s = 每個連通塊的起點
         if (dfn[s]) continue;
-        vector<int> st = {s};
+        vector<int> st = {s};                   // st = 目前的遞迴路徑，最上面是正在處理的點
         dfn[s] = low[s] = ++timer_;
         while (!st.empty()) {
-            int u = st.back();
+            int u = st.back();                  // u = 正在處理的點
             if (it[u] < (int)g[u].size()) {
-                auto [v, id] = g[u][it[u]++];
+                auto [v, id] = g[u][it[u]++];        // v = 下一個鄰居，id = 那條邊的編號
                 if (id == pe[u]) continue;           // 只跳過來時那條邊
                 if (dfn[v]) low[u] = min(low[u], dfn[v]);
                 else {                               // 相當於遞迴呼叫 dfs(v)
@@ -1679,7 +1763,7 @@ int main() {
             } else {                                 // u 的鄰居都處理完，相當於 return
                 st.pop_back();
                 if (!st.empty()) {
-                    int p = st.back();
+                    int p = st.back();               // p = u 的父節點
                     low[p] = min(low[p], low[u]);
                     if (low[u] > dfn[p]) bridges.push_back(pe[u]);
                 }
@@ -1688,7 +1772,7 @@ int main() {
     }
     sort(bridges.begin(), bridges.end());
     cout << bridges.size() << "\n";
-    for (size_t i = 0; i < bridges.size(); i++)
+    for (size_t i = 0; i < bridges.size(); i++)     // i = 第幾個橋
         cout << bridges[i] << " \n"[i + 1 == bridges.size()];
 }
 ```
@@ -1726,21 +1810,23 @@ int main() {
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
+// N = 圖的點數（每個開關 2 個點，共 2n）；timer_ = 時間戳；sccCnt = SCC 個數
 int N, timer_ = 0, sccCnt = 0;
-vector<vector<int>> adj;
+vector<vector<int>> adj;               // adj[x] = 「x 成立」可以推出哪些點也成立
+// dfn、low：Tarjan 用的時間戳；comp[x]：x 屬於第幾個 SCC；stk：還沒分進 SCC 的點
 vector<int> dfn, low, comp, stk;
-vector<bool> inStk;
-void tarjan(int u) {
+vector<bool> inStk;                    // inStk[x] = x 是否在 stk 裡
+void tarjan(int u) {                   // u = 目前拜訪的點
     dfn[u] = low[u] = ++timer_;
     stk.push_back(u); inStk[u] = true;
-    for (int v : adj[u]) {
+    for (int v : adj[u]) {             // v = 從 u 推得出來的點
         if (!dfn[v]) { tarjan(v); low[u] = min(low[u], low[v]); }
         else if (inStk[v]) low[u] = min(low[u], dfn[v]);
     }
-    if (low[u] == dfn[u]) {
+    if (low[u] == dfn[u]) {            // u 是一個 SCC 的根
         ++sccCnt;
         while (true) {
-            int x = stk.back(); stk.pop_back();
+            int x = stk.back(); stk.pop_back();   // x = 屬於這個 SCC 的點
             inStk[x] = false; comp[x] = sccCnt;
             if (x == u) break;
         }
@@ -1748,24 +1834,25 @@ void tarjan(int u) {
 }
 int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
-    int n, m;
+    int n, m;                          // n = 開關數，m = 條件數
     cin >> n >> m;
     N = 2 * n;
     // 點 2i + 1 代表「開關 i 為 1」，點 2i 代表「開關 i 為 0」（i 從 0 起算）
+    // id(i, val) = 「開關 i 為 val」這個點的編號
     auto id = [](int i, int val) { return 2 * i + val; };
     adj.assign(N, {});
-    for (int k = 0; k < m; k++) {
-        int i, a, j, b;
+    for (int k = 0; k < m; k++) {      // k = 第幾個條件
+        int i, a, j, b;                // 條件：開關 i 為 a，或開關 j 為 b
         cin >> i >> a >> j >> b; i--; j--;
         // (i == a) 或 (j == b)：若 i != a 則 j == b；若 j != b 則 i == a
         adj[id(i, 1 - a)].push_back(id(j, b));
         adj[id(j, 1 - b)].push_back(id(i, a));
     }
     dfn.assign(N, 0); low.assign(N, 0); comp.assign(N, 0); inStk.assign(N, false);
-    for (int v = 0; v < N; v++) if (!dfn[v]) tarjan(v);
-    string ans(n, '0');
-    for (int i = 0; i < n; i++) {
-        if (comp[id(i, 0)] == comp[id(i, 1)]) { cout << "IMPOSSIBLE\n"; return 0; }
+    for (int v = 0; v < N; v++) if (!dfn[v]) tarjan(v);   // v = 每個還沒拜訪的點
+    string ans(n, '0');                // ans[i] = 開關 i 的設定
+    for (int i = 0; i < n; i++) {      // i = 第幾個開關
+        if (comp[id(i, 0)] == comp[id(i, 1)]) { cout << "IMPOSSIBLE\n"; return 0; }   // 0 和 1 互相推得出 → 無解
         ans[i] = comp[id(i, 1)] < comp[id(i, 0)] ? '1' : '0';   // 拓撲序較後者為真
     }
     cout << ans << "\n";
@@ -1810,15 +1897,15 @@ int main() {
 - **樹 DP**：對每個點求「往下最長」與「次長」兩條鏈，相加取最大，可處理負權。
 
 ```cpp
-int diameter = 0;
-int down(int u, int p) {             // 回傳從 u 往下的最長鏈（邊數）
-    int best1 = 0, best2 = 0;
-    for (int v : adj[u]) if (v != p) {
-        int d = down(v, u) + 1;
+int diameter = 0;                    // 目前找到的最長路徑（邊數），也就是答案
+int down(int u, int p) {             // 回傳從 u 往下的最長鏈（邊數）；p = u 的父節點
+    int best1 = 0, best2 = 0;        // best1、best2 = 從 u 往下最長、第二長的鏈
+    for (int v : adj[u]) if (v != p) {   // v = u 的子節點
+        int d = down(v, u) + 1;      // d = 經過 v 往下的鏈長
         if (d > best1) { best2 = best1; best1 = d; }
         else if (d > best2) best2 = d;
     }
-    diameter = max(diameter, best1 + best2);
+    diameter = max(diameter, best1 + best2);   // 以 u 為轉折點的最長路徑
     return best1;
 }
 ```
@@ -1842,14 +1929,14 @@ int down(int u, int p) {             // 回傳從 u 往下的最長鏈（邊數�
 **模板**：
 
 ```cpp
-const int N = 200005;
-int n, sz[N];
-vector<int> adj[N], centroids;
+const int N = 200005;                  // 點數上限
+int n, sz[N];                          // n = 點數；sz[u] = 以 1 為根時 u 的子樹大小
+vector<int> adj[N], centroids;         // adj[u] = u 的鄰居；centroids = 找到的重心
 
-void dfs(int u, int p) {
+void dfs(int u, int p) {               // u = 目前的點，p = 父節點
     sz[u] = 1;
     int mx = 0;                        // 刪掉 u 後最大的一塊
-    for (int v : adj[u]) if (v != p) {
+    for (int v : adj[u]) if (v != p) { // v = u 的子節點
         dfs(v, u);
         sz[u] += sz[v];
         mx = max(mx, sz[v]);           // 往下的每一塊
@@ -1872,18 +1959,20 @@ up\[k\]\[u\] 表示 u 往上跳 2^k 步的祖先。預處理 O(n log n)，每次
 
 ```cpp
 const int LOG = 18;                 // 2^18 > 2×10^5
-vector<int> adj[200005];
+vector<int> adj[200005];            // adj[u] = u 的鄰居
+// up[k][u]：u 往上跳 2^k 步到達的祖先，跳過根就是哨兵 0
+// dep[u]：u 的深度，根的深度是 0
 int up[LOG][200005], dep[200005];
 
-void dfs(int u, int p) {            // 從根呼叫 dfs(1, 0)；點 0 當作哨兵
+void dfs(int u, int p) {            // 從根呼叫 dfs(1, 0)；點 0 當作哨兵；p = u 的父節點
     up[0][u] = p;
-    for (int k = 1; k < LOG; k++) up[k][u] = up[k-1][ up[k-1][u] ];
-    for (int v : adj[u]) if (v != p) { dep[v] = dep[u] + 1; dfs(v, u); }
+    for (int k = 1; k < LOG; k++) up[k][u] = up[k-1][ up[k-1][u] ];   // 跳 2^k = 先跳 2^(k-1) 再跳 2^(k-1)
+    for (int v : adj[u]) if (v != p) { dep[v] = dep[u] + 1; dfs(v, u); }   // v = u 的子節點
 }
 
-int lca(int a, int b) {
-    if (dep[a] < dep[b]) swap(a, b);
-    int diff = dep[a] - dep[b];
+int lca(int a, int b) {             // 回傳 a、b 的最近公共祖先
+    if (dep[a] < dep[b]) swap(a, b);    // 讓 a 是比較深的那個
+    int diff = dep[a] - dep[b];         // diff = a 要往上跳幾步才和 b 同深度
     for (int k = 0; k < LOG; k++) if (diff >> k & 1) a = up[k][a]; // 先拉到同一深度
     if (a == b) return a;
     for (int k = LOG - 1; k >= 0; k--)                              // 從大到小一起跳
@@ -1891,7 +1980,7 @@ int lca(int a, int b) {
     return up[0][a];
 }
 
-int dist(int a, int b) { return dep[a] + dep[b] - 2 * dep[lca(a, b)]; }
+int dist(int a, int b) { return dep[a] + dep[b] - 2 * dep[lca(a, b)]; }   // 邊權都是 1 時 a、b 的距離
 ```
 
 倍增表也能順便維護「往上 2^k 步經過的最大邊權」，用來回答路徑最大值查詢。
@@ -1934,17 +2023,18 @@ int dist(int a, int b) { return dep[a] + dep[b] - 2 * dep[lca(a, b)]; }
 **模板**（點差分，搭配 7.3 節的倍增 LCA）：
 
 ```cpp
-long long d[200005], val[200005];      // d 是差分標記，val 是還原後每個點的值
+// d[w] = 點 w 的差分標記；val[w] = 還原後點 w 的值
+long long d[200005], val[200005];
 
 void addPath(int u, int v, long long x) {  // u 到 v 路徑上的每個點都加 x
-    int l = lca(u, v);
+    int l = lca(u, v);                 // l = u 和 v 的最近公共祖先
     d[u] += x; d[v] += x;
     d[l] -= x;                         // u、v 兩邊在 l 重複算了一次
     d[up[0][l]] -= x;                  // l 的父親以上不受影響；l 是根時扣在哨兵 0 上
 }
 
-long long collect(int u, int p) {      // val[u] = u 子樹內 d 的總和
-    long long s = d[u];
+long long collect(int u, int p) {      // val[u] = u 子樹內 d 的總和；p = u 的父節點
+    long long s = d[u];                // s = 目前累加到的子樹和
     for (int v : adj[u]) if (v != p) s += collect(v, u);
     return val[u] = s;
 }
@@ -2003,20 +2093,21 @@ n 個村莊由 n − 1 條道路連成一棵樹，每條道路有長度。求距
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
-int n;
-vector<vector<pair<int,int>>> adj;
+int n;                                      // n = 村莊數
+vector<vector<pair<int,int>>> adj;          // adj[u] = (v, w)：u、v 之間有長度 w 的道路
 // 回傳 (最遠點, 距離)；用 stack 取代遞迴，避免鏈狀樹堆疊溢位
+// s = 出發的村莊
 pair<int,ll> farthest(int s) {
-    vector<ll> dist(n + 1, -1);
-    vector<int> st = {s};
+    vector<ll> dist(n + 1, -1);             // dist[v] = s 到 v 的距離，-1 表示還沒走到
+    vector<int> st = {s};                   // st = 等待處理的點；樹上路徑唯一，處理順序不影響答案
     dist[s] = 0;
     while (!st.empty()) {
-        int u = st.back(); st.pop_back();
-        for (auto [v, w] : adj[u]) if (dist[v] < 0) {
+        int u = st.back(); st.pop_back();   // u = 取出的點
+        for (auto [v, w] : adj[u]) if (dist[v] < 0) {   // v = u 的鄰居，w = 道路長度
             dist[v] = dist[u] + w; st.push_back(v);
         }
     }
-    int best = s;
+    int best = s;                           // best = 目前最遠的點
     for (int i = 1; i <= n; i++) if (dist[i] > dist[best]) best = i;
     return {best, dist[best]};
 }
@@ -2024,12 +2115,12 @@ int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
     cin >> n;
     adj.assign(n + 1, {});
-    for (int i = 0; i < n - 1; i++) {
-        int u, v, w; cin >> u >> v >> w;
+    for (int i = 0; i < n - 1; i++) {       // i = 正在讀第幾條道路
+        int u, v, w; cin >> u >> v >> w;    // 道路連接 u、v，長度 w
         adj[u].push_back({v, w}); adj[v].push_back({u, w});
     }
-    int A = farthest(1).first;
-    cout << farthest(A).second << "\n";
+    int A = farthest(1).first;              // A = 離村莊 1 最遠的點，一定是直徑的一端
+    cout << farthest(A).second << "\n";     // 從 A 出發的最遠距離就是直徑
 }
 ```
 
@@ -2068,37 +2159,39 @@ using namespace std;
 using ll = long long;
 int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
-    int n;
+    int n;                                      // n = 村莊數
     cin >> n;
-    vector<vector<pair<int,int>>> adj(n + 1);
-    for (int i = 0; i < n - 1; i++) {
+    vector<vector<pair<int,int>>> adj(n + 1);   // adj[u] = (v, w)：u、v 之間有長度 w 的道路
+    for (int i = 0; i < n - 1; i++) {           // i = 正在讀第幾條道路
         int u, v, w; cin >> u >> v >> w;
         adj[u].push_back({v, w}); adj[v].push_back({u, w});
     }
     // BFS 序：父節點必在子節點之前
+    // order：以 1 為根的 BFS 順序；par[v]：v 的父節點；pw[v]：v 到父節點那條道路的長度
     vector<int> order, par(n + 1, 0), pw(n + 1, 0);
+    // sz[u]：u 的子樹有幾個點；S[u]：所有村莊到 u 的距離總和（答案）
     vector<ll> sz(n + 1, 1), S(n + 1, 0);
     order.reserve(n);
-    vector<bool> seen(n + 1, false);
-    queue<int> q; q.push(1); seen[1] = true;
+    vector<bool> seen(n + 1, false);            // seen[v] = v 是否已經被 BFS 發現
+    queue<int> q; q.push(1); seen[1] = true;    // q = BFS 佇列
     while (!q.empty()) {
         int u = q.front(); q.pop(); order.push_back(u);
-        for (auto [v, w] : adj[u]) if (!seen[v]) {
+        for (auto [v, w] : adj[u]) if (!seen[v]) {   // v = u 的子節點
             seen[v] = true; par[v] = u; pw[v] = w; q.push(v);
         }
     }
     // 第一趟（由下往上）：sz[u] 與 down[u] = u 到子樹內所有點的距離和
     vector<ll> down(n + 1, 0);
-    for (int i = n - 1; i >= 1; i--) {
-        int v = order[i], u = par[v];
+    for (int i = n - 1; i >= 1; i--) {          // i 由後往前：子節點一定比父節點先處理
+        int v = order[i], u = par[v];           // v = 目前的點，u = 它的父節點
         sz[u] += sz[v];
-        down[u] += down[v] + (ll)pw[v] * sz[v];
+        down[u] += down[v] + (ll)pw[v] * sz[v]; // v 子樹裡每個點到 u 都要多走 pw[v]
     }
     // 第二趟（由上往下）：換根
     S[1] = down[1];
-    for (int i = 1; i < n; i++) {
+    for (int i = 1; i < n; i++) {               // i 由前往後：父節點的答案一定先算好
         int v = order[i], u = par[v];
-        S[v] = S[u] + (ll)pw[v] * (n - 2 * sz[v]);
+        S[v] = S[u] + (ll)pw[v] * (n - 2 * sz[v]);   // sz[v] 個點近了 pw[v]，其餘 n − sz[v] 個點遠了 pw[v]
     }
     for (int i = 1; i <= n; i++) cout << S[i] << " \n"[i == n];
 }
@@ -2143,16 +2236,17 @@ int main() {
 **模板**：
 
 ```cpp
-// 回傳是否為二分圖；color[u] 是 0 或 1，表示 u 被分到哪一組
+// n = 點數，adj[u] = u 的鄰居；回傳是否為二分圖
+// color[u] 是 0 或 1，表示 u 被分到哪一組
 bool bipartite(int n, const vector<vector<int>>& adj, vector<int>& color) {
     color.assign(n + 1, -1);           // -1 表示還沒塗色
-    for (int s = 1; s <= n; s++) {     // 每個連通塊各自塗
+    for (int s = 1; s <= n; s++) {     // s = 每個連通塊的起點，每個連通塊各自塗
         if (color[s] != -1) continue;
         color[s] = 0;
-        queue<int> q; q.push(s);
+        queue<int> q; q.push(s);       // q = BFS 佇列
         while (!q.empty()) {
-            int u = q.front(); q.pop();
-            for (int v : adj[u]) {
+            int u = q.front(); q.pop();   // u = 目前處理的點
+            for (int v : adj[u]) {        // v = u 的鄰居，應該塗和 u 相反的顏色
                 if (color[v] == -1) { color[v] = color[u] ^ 1; q.push(v); }
                 else if (color[v] == color[u]) return false;   // 相鄰同色 → 有奇環
             }
@@ -2174,20 +2268,21 @@ bool bipartite(int n, const vector<vector<int>>& adj, vector<int>& color) {
 匹配是一組沒有共同端點的邊。匈牙利演算法對左邊每個點嘗試找「增廣路徑」：若右邊的 v 已被佔用，就遞迴請佔用者換別人。
 
 ```cpp
-int nL, nR;
+int nL, nR;                  // nL = 左邊點數，nR = 右邊點數
 vector<vector<int>> g;       // g[u] = 左邊 u 可連的右邊點
 vector<int> matchR;          // matchR[v] = 與右邊 v 配對的左邊點，0 為無
-vector<bool> vis;
+vector<bool> vis;            // vis[v] = 這一次找增廣路時，右邊 v 是否已經問過
 
-bool tryKuhn(int u) {
-    for (int v : g[u]) {
+bool tryKuhn(int u) {        // 幫左邊 u 找對象；找到增廣路就回傳 true
+    for (int v : g[u]) {     // v = u 可以配的右邊點
         if (vis[v]) continue;
         vis[v] = true;
+        // v 沒人配，或 v 原本的對象能換到別人，就把 v 給 u
         if (matchR[v] == 0 || tryKuhn(matchR[v])) { matchR[v] = u; return true; }
     }
     return false;
 }
-// int ans = 0;
+// int ans = 0;                 // ans = 最大匹配數
 // for (int u = 1; u <= nL; u++) { vis.assign(nR + 1, false); if (tryKuhn(u)) ans++; }
 ```
 
@@ -2219,38 +2314,43 @@ bool tryKuhn(int u) {
 ```cpp
 using ll = long long;
 struct Dinic {
-    struct E { int to; ll cap; };
+    struct E { int to; ll cap; };              // 一條邊：指向 to，剩餘容量 cap
+    // e：所有的邊，第 i 條和第 i ^ 1 條互為反向邊
+    // g[u]：從 u 出發的邊在 e 裡的編號
+    // lvl[u]：BFS 分層後 u 的層數（離 s 幾步），-1 表示走不到
+    // it[u]：當前弧，u 下一條要嘗試的邊是 g[u] 的第幾條
     vector<E> e; vector<vector<int>> g; vector<int> lvl, it;
-    Dinic(int n) : g(n + 1), lvl(n + 1), it(n + 1) {}
+    Dinic(int n) : g(n + 1), lvl(n + 1), it(n + 1) {}   // n = 最大的點編號
     void addEdge(int u, int v, ll c) {          // 第 i 條與第 i^1 條互為反向邊
-        g[u].push_back(e.size()); e.push_back({v, c});
-        g[v].push_back(e.size()); e.push_back({u, 0});
+        g[u].push_back(e.size()); e.push_back({v, c});   // 正向邊 u → v，容量 c
+        g[v].push_back(e.size()); e.push_back({u, 0});   // 反向邊 v → u，容量從 0 開始
     }
-    bool bfs(int s, int t) {
+    bool bfs(int s, int t) {                    // 從 s 分層；回傳 t 是否還走得到
         fill(lvl.begin(), lvl.end(), -1);
         queue<int> q; lvl[s] = 0; q.push(s);
         while (!q.empty()) {
             int u = q.front(); q.pop();
-            for (int id : g[u])
+            for (int id : g[u])                 // id = u 出發的一條邊的編號
                 if (e[id].cap > 0 && lvl[e[id].to] < 0) {
                     lvl[e[id].to] = lvl[u] + 1; q.push(e[id].to);
                 }
         }
         return lvl[t] >= 0;
     }
+    // 從 u 往 t 送流，f = 這條路到目前為止最多還能送多少；回傳實際送出的量
     ll dfs(int u, int t, ll f) {
         if (u == t) return f;
         for (int& i = it[u]; i < (int)g[u].size(); i++) {   // 當前弧優化
-            int id = g[u][i], v = e[id].to;
-            if (e[id].cap > 0 && lvl[v] == lvl[u] + 1) {
-                ll d = dfs(v, t, min(f, e[id].cap));
+            int id = g[u][i], v = e[id].to;     // id = 嘗試的邊，v = 這條邊的終點
+            if (e[id].cap > 0 && lvl[v] == lvl[u] + 1) {    // 只走往下一層、還有容量的邊
+                ll d = dfs(v, t, min(f, e[id].cap));        // d = 經由 v 實際送到 t 的量
                 if (d > 0) { e[id].cap -= d; e[id ^ 1].cap += d; return d; }
             }
         }
         return 0;
     }
-    ll maxflow(int s, int t) {
-        ll flow = 0, f;
+    ll maxflow(int s, int t) {                  // s = 源點，t = 匯點
+        ll flow = 0, f;                         // flow = 目前的總流量，f = 這次增廣送出的量
         while (bfs(s, t)) {
             fill(it.begin(), it.end(), 0);
             while ((f = dfs(s, t, LLONG_MAX)) > 0) flow += f;
@@ -2295,11 +2395,11 @@ struct Dinic {
 ```cpp
 vector<vector<pair<int,int>>> g;   // g[u] = (v, 邊編號)，無向邊兩個方向用同一個編號
 vector<bool> used;                 // used[邊編號] = 這條邊走過了沒
-vector<int> ptr, path;             // ptr[u] = u 下一條要檢查的邊
+vector<int> ptr, path;             // ptr[u] = u 下一條要檢查的邊；path = 依「卡住」的順序記下的點
 
-void euler(int u) {
-    for (int& i = ptr[u]; i < (int)g[u].size(); ) {
-        auto [v, id] = g[u][i++];
+void euler(int u) {                // u = 目前所在的點
+    for (int& i = ptr[u]; i < (int)g[u].size(); ) {   // i 直接綁在 ptr[u] 上，遞迴回來也不會重看舊的邊
+        auto [v, id] = g[u][i++];  // v = 這條邊的另一端，id = 邊編號
         if (used[id]) continue;    // 這條邊從另一端走過了
         used[id] = true;
         euler(v);
@@ -2352,15 +2452,15 @@ void euler(int u) {
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-int nL, nR, E;
-vector<vector<int>> g;
-vector<int> matchR;
-vector<bool> vis;
-bool tryKuhn(int u) {
-    for (int v : g[u]) {
+int nL, nR, E;                   // nL = 員工數，nR = 工作數，E = 「會做」的關係數
+vector<vector<int>> g;           // g[u] = 員工 u 會做的工作
+vector<int> matchR;              // matchR[v] = 負責工作 v 的員工，0 表示還沒人做
+vector<bool> vis;                // vis[v] = 這一次找增廣路時，工作 v 是否已經問過
+bool tryKuhn(int u) {            // 幫員工 u 找工作；成功回傳 true
+    for (int v : g[u]) {         // v = u 會做的工作
         if (vis[v]) continue;
         vis[v] = true;
-        if (matchR[v] == 0 || tryKuhn(matchR[v])) { matchR[v] = u; return true; }
+        if (matchR[v] == 0 || tryKuhn(matchR[v])) { matchR[v] = u; return true; }   // v 沒人做，或原本的人能換工作
     }
     return false;
 }
@@ -2368,10 +2468,10 @@ int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
     cin >> nL >> nR >> E;
     g.assign(nL + 1, {});
-    for (int i = 0; i < E; i++) { int u, v; cin >> u >> v; g[u].push_back(v); }
+    for (int i = 0; i < E; i++) { int u, v; cin >> u >> v; g[u].push_back(v); }   // 員工 u 會做工作 v
     matchR.assign(nR + 1, 0);
-    int ans = 0;
-    for (int u = 1; u <= nL; u++) {
+    int ans = 0;                     // 已經配成的組數
+    for (int u = 1; u <= nL; u++) {  // u = 目前要安排的員工
         vis.assign(nR + 1, false);
         if (tryKuhn(u)) ans++;
     }
@@ -2414,14 +2514,16 @@ int main() {
 using namespace std;
 using ll = long long;
 struct Dinic {
-    struct Ed { int to; ll cap; };
+    struct Ed { int to; ll cap; };             // 一條邊：指向 to，剩餘容量 cap
+    // e：所有的邊（第 i 條和第 i ^ 1 條互為反向邊）；g[u]：u 出發的邊編號
+    // lvl[u]：分層後的層數；it[u]：當前弧，下一條要試的邊
     vector<Ed> e; vector<vector<int>> g; vector<int> lvl, it;
-    Dinic(int n) : g(n + 1), lvl(n + 1), it(n + 1) {}
-    void addEdge(int u, int v, ll c) {
+    Dinic(int n) : g(n + 1), lvl(n + 1), it(n + 1) {}   // n = 最大的點編號
+    void addEdge(int u, int v, ll c) {         // 加入 u → v 容量 c，和容量 0 的反向邊
         g[u].push_back(e.size()); e.push_back({v, c});
         g[v].push_back(e.size()); e.push_back({u, 0});
     }
-    bool bfs(int s, int t) {
+    bool bfs(int s, int t) {                   // 分層，回傳 t 是否走得到
         fill(lvl.begin(), lvl.end(), -1);
         queue<int> q; lvl[s] = 0; q.push(s);
         while (!q.empty()) {
@@ -2431,19 +2533,19 @@ struct Dinic {
         }
         return lvl[t] >= 0;
     }
-    ll dfs(int u, int t, ll f) {
+    ll dfs(int u, int t, ll f) {               // 從 u 往 t 送流，最多送 f，回傳實際送出的量
         if (u == t) return f;
-        for (int& i = it[u]; i < (int)g[u].size(); i++) {
-            int id = g[u][i], v = e[id].to;
+        for (int& i = it[u]; i < (int)g[u].size(); i++) {   // i 綁在 it[u] 上：當前弧優化
+            int id = g[u][i], v = e[id].to;    // id = 嘗試的邊，v = 終點
             if (e[id].cap > 0 && lvl[v] == lvl[u] + 1) {
-                ll d = dfs(v, t, min(f, e[id].cap));
+                ll d = dfs(v, t, min(f, e[id].cap));   // d = 經由 v 送到 t 的量
                 if (d > 0) { e[id].cap -= d; e[id ^ 1].cap += d; return d; }
             }
         }
         return 0;
     }
-    ll maxflow(int s, int t) {
-        ll flow = 0, f;
+    ll maxflow(int s, int t) {                 // 回傳 s 到 t 的最大流
+        ll flow = 0, f;                        // flow = 總流量，f = 這次送出的量
         while (bfs(s, t)) {
             fill(it.begin(), it.end(), 0);
             while ((f = dfs(s, t, LLONG_MAX)) > 0) flow += f;
@@ -2453,26 +2555,26 @@ struct Dinic {
 };
 int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
-    int n, m;
+    int n, m;                                  // n = 專案數，m = 工具數
     cin >> n >> m;
     // 點編號：S = 0，專案 1..n，工具 n+1..n+m，T = n+m+1
-    int S = 0, T = n + m + 1;
+    int S = 0, T = n + m + 1;                  // S = 源點，T = 匯點
     Dinic din(T);
-    const ll INF = LLONG_MAX / 4;
-    ll totalProfit = 0;
+    const ll INF = LLONG_MAX / 4;              // 代表「不能切」的無限容量
+    ll totalProfit = 0;                        // 所有專案的獲利總和
+    for (int i = 1; i <= n; i++) {             // i = 專案編號
+        ll p; cin >> p; totalProfit += p;      // p = 專案 i 的獲利
+        din.addEdge(S, i, p);                  // 切掉這條邊 = 放棄專案 i
+    }
+    for (int j = 1; j <= m; j++) {             // j = 工具編號
+        ll c; cin >> c;                        // c = 工具 j 的價格
+        din.addEdge(n + j, T, c);              // 切掉這條邊 = 買下工具 j
+    }
     for (int i = 1; i <= n; i++) {
-        ll p; cin >> p; totalProfit += p;
-        din.addEdge(S, i, p);
+        int k; cin >> k;                       // k = 專案 i 需要幾種工具
+        while (k--) { int j; cin >> j; din.addEdge(i, n + j, INF); }   // 做專案 i 就一定要買工具 j
     }
-    for (int j = 1; j <= m; j++) {
-        ll c; cin >> c;
-        din.addEdge(n + j, T, c);
-    }
-    for (int i = 1; i <= n; i++) {
-        int k; cin >> k;
-        while (k--) { int j; cin >> j; din.addEdge(i, n + j, INF); }
-    }
-    cout << totalProfit - din.maxflow(S, T) << "\n";
+    cout << totalProfit - din.maxflow(S, T) << "\n";   // 最大淨利 = 總獲利 − 最小割
 }
 ```
 
@@ -2663,25 +2765,25 @@ int main() {
 using namespace std;
 int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
-    int R, C;
+    int R, C;                        // R、C = 地圖的列數和行數
     cin >> R >> C;
-    vector<string> g(R);
-    for (auto& s : g) cin >> s;
-    vector<vector<bool>> vis(R, vector<bool>(C, false));
-    int dx[] = {1, -1, 0, 0}, dy[] = {0, 0, 1, -1};
-    int islands = 0, best = 0;
-    for (int i = 0; i < R; i++)
+    vector<string> g(R);             // g[i][j] = 第 i 列第 j 行，'#' 是陸地、'.' 是海
+    for (auto& s : g) cin >> s;      // s = g 的每一列，用參考才能直接讀進 g
+    vector<vector<bool>> vis(R, vector<bool>(C, false));   // vis[i][j] = 這格陸地是否已經算進某座島
+    int dx[] = {1, -1, 0, 0}, dy[] = {0, 0, 1, -1};      // 上下左右四個方向的位移
+    int islands = 0, best = 0;       // islands = 島的數量，best = 最大的島有幾格
+    for (int i = 0; i < R; i++)          // (i, j) = 掃描到的格子
         for (int j = 0; j < C; j++) {
-            if (g[i][j] != '#' || vis[i][j]) continue;
-            islands++;
-            int area = 0;
-            queue<pair<int,int>> q;
+            if (g[i][j] != '#' || vis[i][j]) continue;   // 不是陸地，或已經屬於某座島
+            islands++;                   // 找到一座新的島
+            int area = 0;                // 這座島目前算到的格數
+            queue<pair<int,int>> q;      // BFS 佇列，存還沒展開的格子
             q.push({i, j}); vis[i][j] = true;
             while (!q.empty()) {
-                auto [x, y] = q.front(); q.pop();
+                auto [x, y] = q.front(); q.pop();   // (x, y) = 目前展開的格子
                 area++;
-                for (int d = 0; d < 4; d++) {
-                    int nx = x + dx[d], ny = y + dy[d];
+                for (int d = 0; d < 4; d++) {       // d = 第幾個方向
+                    int nx = x + dx[d], ny = y + dy[d];   // (nx, ny) = 相鄰的格子
                     if (nx < 0 || nx >= R || ny < 0 || ny >= C) continue;
                     if (g[nx][ny] != '#' || vis[nx][ny]) continue;
                     vis[nx][ny] = true;
@@ -2706,10 +2808,10 @@ int main() {
 #include <bits/stdc++.h>
 using namespace std;
 struct DSU {
-    vector<int> p, sz;
-    DSU(int n) : p(n + 1), sz(n + 1, 1) { iota(p.begin(), p.end(), 0); }
-    int find(int x) { return p[x] == x ? x : p[x] = find(p[x]); }
-    bool unite(int a, int b) {
+    vector<int> p, sz;                   // p[x] = x 的父節點，sz[x] = 以 x 為根的組大小
+    DSU(int n) : p(n + 1), sz(n + 1, 1) { iota(p.begin(), p.end(), 0); }   // 一開始每個點自成一組
+    int find(int x) { return p[x] == x ? x : p[x] = find(p[x]); }       // 找 x 的根並路徑壓縮
+    bool unite(int a, int b) {           // 合併 a、b 所在的組，已經同組時回傳 false
         a = find(a); b = find(b);
         if (a == b) return false;
         if (sz[a] < sz[b]) swap(a, b);
@@ -2719,16 +2821,16 @@ struct DSU {
 };
 int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
-    int n, m;
+    int n, m;                        // n = 城市數，m = 道路數
     cin >> n >> m;
     DSU dsu(n);
-    int comps = n;
-    for (int i = 0; i < m; i++) {
-        int u, v;
+    int comps = n;                   // 目前的連通塊數，一開始每座城市自成一塊
+    for (int i = 0; i < m; i++) {    // i = 正在讀第幾條道路
+        int u, v;                    // 這條道路連接 u、v
         cin >> u >> v;
-        if (dsu.unite(u, v)) comps--;
+        if (dsu.unite(u, v)) comps--;   // 連起兩個不同的連通塊，塊數少 1
     }
-    cout << comps - 1 << "\n";
+    cout << comps - 1 << "\n";       // k 個連通塊至少要再修 k − 1 條路
 }
 ```
 
@@ -2749,33 +2851,34 @@ int main() {
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
-const ll INF = 1e18;
-const ll MOD = 1e9 + 7;
+const ll INF = 1e18;                 // 代表走不到
+const ll MOD = 1e9 + 7;              // 路徑數取餘數用
 int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
-    int n, m;
+    int n, m;                        // n = 點數，m = 邊數
     cin >> n >> m;
-    vector<vector<pair<int,int>>> adj(n + 1);
-    for (int i = 0; i < m; i++) {
-        int u, v, w;
+    vector<vector<pair<int,int>>> adj(n + 1);   // adj[u] = (v, w)：u、v 之間邊權 w 的邊
+    for (int i = 0; i < m; i++) {    // i = 正在讀第幾條邊
+        int u, v, w;                 // 這條邊連接 u、v，邊權 w
         cin >> u >> v >> w;
         adj[u].push_back({v, w});
         adj[v].push_back({u, w});
     }
+    // dist[v]：點 1 到 v 的最短距離；cnt[v]：長度等於 dist[v] 的路徑數（取餘數後）
     vector<ll> dist(n + 1, INF), cnt(n + 1, 0);
-    priority_queue<pair<ll,int>, vector<pair<ll,int>>, greater<>> pq;
+    priority_queue<pair<ll,int>, vector<pair<ll,int>>, greater<>> pq;   // (距離, 點)，距離小的先出來
     dist[1] = 0; cnt[1] = 1;
     pq.push({0, 1});
     while (!pq.empty()) {
-        auto [d, u] = pq.top(); pq.pop();
+        auto [d, u] = pq.top(); pq.pop();   // u = 取出的點，d = 它當時的距離
         if (d > dist[u]) continue;
-        for (auto [v, w] : adj[u]) {
-            ll nd = d + w;
-            if (nd < dist[v]) {
+        for (auto [v, w] : adj[u]) {        // 邊 u–v，邊權 w
+            ll nd = d + w;                  // nd = 經由 u 走到 v 的距離
+            if (nd < dist[v]) {             // 找到更短的路：舊的路徑數作廢
                 dist[v] = nd;
                 cnt[v] = cnt[u];
                 pq.push({nd, v});
-            } else if (nd == dist[v]) {
+            } else if (nd == dist[v]) {     // 一樣短：路徑數相加
                 cnt[v] = (cnt[v] + cnt[u]) % MOD;
             }
         }
@@ -2799,35 +2902,35 @@ using namespace std;
 using ll = long long;
 int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
-    int n, m;
+    int n, m;                         // n = 工作數，m = 相依關係數
     cin >> n >> m;
-    vector<ll> t(n + 1);
+    vector<ll> t(n + 1);              // t[i] = 工作 i 需要幾天
     for (int i = 1; i <= n; i++) cin >> t[i];
-    vector<vector<int>> adj(n + 1);
-    vector<int> indeg(n + 1, 0);
-    for (int i = 0; i < m; i++) {
-        int a, b;
+    vector<vector<int>> adj(n + 1);   // adj[a] = 要等 a 做完才能開始的工作
+    vector<int> indeg(n + 1, 0);      // indeg[b] = b 還在等幾項工作完成
+    for (int i = 0; i < m; i++) {     // i = 正在讀第幾條相依關係
+        int a, b;                     // a 完成後 b 才能開始
         cin >> a >> b;
         adj[a].push_back(b);
         indeg[b]++;
     }
     vector<ll> start(n + 1, 0);       // start[v] = v 最早可開工的時間
-    queue<int> q;
+    queue<int> q;                     // q = 前置工作都做完、可以開始的工作
     for (int i = 1; i <= n; i++)
         if (indeg[i] == 0) q.push(i);
-    int done = 0;
-    ll ans = 0;
+    int done = 0;                     // 已經排進時程的工作數
+    ll ans = 0;                       // 全部完成的最早時間
     while (!q.empty()) {
-        int u = q.front(); q.pop();
+        int u = q.front(); q.pop();   // u = 可以開始的工作
         done++;
-        ll finish = start[u] + t[u];
+        ll finish = start[u] + t[u];  // finish = u 最早的完成時間
         ans = max(ans, finish);
-        for (int v : adj[u]) {
-            start[v] = max(start[v], finish);
+        for (int v : adj[u]) {        // v = 在等 u 的工作
+            start[v] = max(start[v], finish);   // v 要等所有前置工作中最晚完成的那個
             if (--indeg[v] == 0) q.push(v);
         }
     }
-    if (done < n) cout << -1 << "\n";
+    if (done < n) cout << -1 << "\n";   // 有工作永遠排不進來 → 相依關係有環
     else cout << ans << "\n";
 }
 ```
@@ -2850,21 +2953,25 @@ int main() {
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
+// n = 房間數，m = 通道數；timer_ = Tarjan 時間戳；sccCnt = SCC 個數
 int n, m, timer_ = 0, sccCnt = 0;
-vector<vector<int>> adj;
+vector<vector<int>> adj;              // adj[u] = 從 u 可以走到的房間
+// dfn、low：Tarjan 用的時間戳
+// comp[u]：u 屬於第幾個 SCC，0 表示從房間 1 走不到
+// stk：還沒分進 SCC 的點
 vector<int> dfn, low, comp, stk;
-vector<bool> inStk;
-void tarjan(int u) {
+vector<bool> inStk;                   // inStk[u] = u 是否在 stk 裡
+void tarjan(int u) {                  // u = 目前拜訪的房間
     dfn[u] = low[u] = ++timer_;
     stk.push_back(u); inStk[u] = true;
-    for (int v : adj[u]) {
+    for (int v : adj[u]) {            // v = u 可以走到的房間
         if (!dfn[v]) { tarjan(v); low[u] = min(low[u], low[v]); }
         else if (inStk[v]) low[u] = min(low[u], dfn[v]);
     }
-    if (low[u] == dfn[u]) {
+    if (low[u] == dfn[u]) {           // u 是一個 SCC 的根
         ++sccCnt;
         while (true) {
-            int x = stk.back(); stk.pop_back();
+            int x = stk.back(); stk.pop_back();   // x = 屬於這個 SCC 的房間
             inStk[x] = false; comp[x] = sccCnt;
             if (x == u) break;
         }
@@ -2873,18 +2980,18 @@ void tarjan(int u) {
 int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
     cin >> n >> m;
-    vector<ll> a(n + 1);
+    vector<ll> a(n + 1);                // a[i] = 房間 i 的寶石數
     for (int i = 1; i <= n; i++) cin >> a[i];
     adj.assign(n + 1, {});
-    vector<pair<int,int>> edges(m);
+    vector<pair<int,int>> edges(m);     // 所有通道 (u, v)，縮點時要再用一次
     for (auto& [u, v] : edges) { cin >> u >> v; adj[u].push_back(v); }
     dfn.assign(n + 1, 0); low.assign(n + 1, 0);
     comp.assign(n + 1, 0); inStk.assign(n + 1, false);
     tarjan(1);                          // 只需要從 1 出發可達的部分
     // 縮點：sum[c] = 第 c 個 SCC 的寶石總和
     vector<ll> sum(sccCnt + 1, 0);
-    for (int i = 1; i <= n; i++) if (comp[i]) sum[comp[i]] += a[i];
-    vector<vector<int>> dag(sccCnt + 1);
+    for (int i = 1; i <= n; i++) if (comp[i]) sum[comp[i]] += a[i];   // i = 房間編號
+    vector<vector<int>> dag(sccCnt + 1);   // dag[c] = 縮點後從 SCC c 走得到的 SCC
     for (auto [u, v] : edges)
         if (comp[u] && comp[v] && comp[u] != comp[v])
             dag[comp[u]].push_back(comp[v]);
@@ -2892,10 +2999,10 @@ int main() {
     vector<ll> best(sccCnt + 1, 0);     // best[c] = 走到 c 時最多已收集多少（含 c）
     int s = comp[1];                    // 起點所在 SCC，一定是 sccCnt
     best[s] = sum[s];
-    ll ans = best[s];
-    for (int c = sccCnt; c >= 1; c--) {
+    ll ans = best[s];                   // ans = 目前最多能收集的寶石數
+    for (int c = sccCnt; c >= 1; c--) { // c = 依拓撲序處理的 SCC
         ans = max(ans, best[c]);
-        for (int d : dag[c]) best[d] = max(best[d], best[c] + sum[d]);
+        for (int d : dag[c]) best[d] = max(best[d], best[c] + sum[d]);   // d = c 走得到的 SCC
     }
     cout << ans << "\n";
 }
@@ -2921,55 +3028,55 @@ int main() {
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-const int LOG = 18;
+const int LOG = 18;                       // 2^18 > 2×10^5，倍增表的層數
 int main() {
     ios::sync_with_stdio(false); cin.tie(nullptr);
-    int n, q;
+    int n, q;                             // n = 站點數，q = 配送筆數
     cin >> n >> q;
-    vector<vector<int>> adj(n + 1);
-    for (int i = 0; i < n - 1; i++) {
-        int u, v;
+    vector<vector<int>> adj(n + 1);       // adj[u] = u 的相鄰站點
+    for (int i = 0; i < n - 1; i++) {     // i = 正在讀第幾條道路
+        int u, v;                         // 道路連接 u、v
         cin >> u >> v;
         adj[u].push_back(v);
         adj[v].push_back(u);
     }
     // 以 BFS 求父節點與深度，避免遞迴過深
-    vector<vector<int>> up(LOG, vector<int>(n + 1, 0));
-    vector<int> dep(n + 1, 0), order;
+    vector<vector<int>> up(LOG, vector<int>(n + 1, 0));   // up[k][u] = u 往上跳 2^k 步的祖先，0 是哨兵
+    vector<int> dep(n + 1, 0), order;     // dep[u] = u 的深度；order = BFS 順序，父節點一定在子節點前面
     order.reserve(n);
-    vector<bool> seen(n + 1, false);
-    queue<int> bq; bq.push(1); seen[1] = true;
+    vector<bool> seen(n + 1, false);      // seen[v] = v 是否已被 BFS 發現
+    queue<int> bq; bq.push(1); seen[1] = true;   // bq = BFS 佇列
     while (!bq.empty()) {
         int u = bq.front(); bq.pop();
         order.push_back(u);
-        for (int v : adj[u]) if (!seen[v]) {
+        for (int v : adj[u]) if (!seen[v]) {     // v = u 的子節點
             seen[v] = true; up[0][v] = u; dep[v] = dep[u] + 1; bq.push(v);
         }
     }
     for (int k = 1; k < LOG; k++)
         for (int u = 1; u <= n; u++) up[k][u] = up[k-1][ up[k-1][u] ];
-    auto lca = [&](int a, int b) {
+    auto lca = [&](int a, int b) {        // 回傳 a、b 的最近公共祖先，寫法同 7.3 節
         if (dep[a] < dep[b]) swap(a, b);
-        int diff = dep[a] - dep[b];
+        int diff = dep[a] - dep[b];       // a 要往上跳幾步才和 b 同深度
         for (int k = 0; k < LOG; k++) if (diff >> k & 1) a = up[k][a];
         if (a == b) return a;
         for (int k = LOG - 1; k >= 0; k--)
             if (up[k][a] != up[k][b]) { a = up[k][a]; b = up[k][b]; }
         return up[0][a];
     };
-    vector<long long> d(n + 1, 0);
-    for (int i = 0; i < q; i++) {
-        int u, v;
+    vector<long long> d(n + 1, 0);        // d[w] = 差分標記，最後累加成站點 w 的工作量
+    for (int i = 0; i < q; i++) {         // i = 第幾筆配送
+        int u, v;                         // 這筆配送從 u 送到 v
         cin >> u >> v;
-        int l = lca(u, v);
+        int l = lca(u, v);                // l = u、v 的最近公共祖先
         d[u]++; d[v]++; d[l]--;
         if (up[0][l]) d[up[0][l]]--;    // 根的父節點是 0，不必扣
     }
     // 依 BFS 序反向累加，等同子樹和
-    for (int i = n - 1; i >= 1; i--) {
+    for (int i = n - 1; i >= 1; i--) {    // i 由後往前：子節點一定比父節點先處理
         int u = order[i];
-        d[up[0][u]] += d[u];
+        d[up[0][u]] += d[u];              // 把 u 的子樹和加到父節點
     }
-    cout << *max_element(d.begin() + 1, d.end()) << "\n";
+    cout << *max_element(d.begin() + 1, d.end()) << "\n";   // 工作量最大的站點
 }
 ```
