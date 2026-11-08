@@ -1,0 +1,14 @@
+{
+ "id": "2B",
+ "title": "破牆迷宮",
+ "level": "困難",
+ "source": "第二章 範例 2-B",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 18,
+  "mid": 4,
+  "max": 5
+ }
+}

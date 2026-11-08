@@ -1,0 +1,14 @@
+{
+ "id": "5A",
+ "title": "字典序最小選課",
+ "level": "基礎",
+ "source": "第五章 範例 5-A",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 15,
+  "mid": 4,
+  "max": 5
+ }
+}

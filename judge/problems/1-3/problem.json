@@ -1,0 +1,14 @@
+{
+ "id": "1-3",
+ "title": "停駛的渡輪",
+ "level": "困難",
+ "source": "第一章 實作 1-3",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 15,
+  "mid": 4,
+  "max": 6
+ }
+}

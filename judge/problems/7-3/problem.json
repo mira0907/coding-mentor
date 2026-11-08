@@ -1,0 +1,14 @@
+{
+ "id": "7-3",
+ "title": "樹上配送",
+ "level": "困難",
+ "source": "第七章 實作 7-3",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 15,
+  "mid": 4,
+  "max": 5
+ }
+}

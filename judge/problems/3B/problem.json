@@ -1,0 +1,14 @@
+{
+ "id": "3B",
+ "title": "優惠券航線",
+ "level": "困難",
+ "source": "第三章 範例 3-B",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 24,
+  "mid": 3,
+  "max": 5
+ }
+}

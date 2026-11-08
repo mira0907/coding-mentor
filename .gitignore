@@ -4,3 +4,10 @@ problems/**/*.dSYM/
 *.o
 a.out
 .DS_Store
+
+# judge 的測資快取、編譯產物與個人成績（可隨時重新產生）
+judge/.cache/
+judge/.results.json
+__pycache__/
+*_debug
+*_debug.dSYM/

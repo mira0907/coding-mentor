@@ -11,7 +11,9 @@ problems/<題目名稱>/
   tests/        測資：1.in / 1.out、2.in / 2.out ...
 template/       新題目使用的 C++ 模板
 include/bits/   macOS 用的 <bits/stdc++.h> 替代
-scripts/        new.sh（建立新題）、run.sh（編譯並跑測資）
+scripts/        new.sh（建立新題）、run.sh（編譯並跑測資）、judge.sh（評測講義題目）
+judge/          講義 40 題的本機評測系統
+solutions/      講義題目的解答，檔名用題號，例如 3-1.cpp
 notes/          學習講義
 docs/           使用說明
 ```
@@ -19,7 +21,17 @@ docs/           使用說明
 ## 講義與文件
 
 - [競賽圖論講義](notes/graph-theory.md)：八章觀念、十六題範例程式題、章末觀念檢測，以及每章簡單、中等、困難各一題的實作題與詳解
+- [講義題目 Judge](judge/README.md)：在本機評測講義的 40 題，回報 AC、WA、TLE、RE
+- [C++ 開發環境](docs/cpp-environment.md)：已安裝的工具、VS Code 除錯、常見問題
 - [GitHub 使用指南](docs/github-guide.md)：commit、push、pull 與常見狀況
+
+## 評測講義題目
+
+```bash
+./scripts/judge.sh new 3-1              # 建立 solutions/3-1.cpp 並顯示題目
+./scripts/judge.sh solutions/3-1.cpp    # 評測
+./scripts/judge.sh list                 # 看所有題目與你的進度
+```
 
 ## 使用方式
 

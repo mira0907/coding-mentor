@@ -1,0 +1,14 @@
+{
+ "id": "4-3",
+ "title": "光纖網路",
+ "level": "困難",
+ "source": "第四章 實作 4-3",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 24,
+  "mid": 4,
+  "max": 5
+ }
+}

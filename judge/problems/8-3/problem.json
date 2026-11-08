@@ -1,0 +1,14 @@
+{
+ "id": "8-3",
+ "title": "騎士共存",
+ "level": "困難",
+ "source": "第八章 實作 8-3",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 15,
+  "mid": 4,
+  "max": 5
+ }
+}

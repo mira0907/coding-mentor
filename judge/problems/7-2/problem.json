@@ -1,0 +1,14 @@
+{
+ "id": "7-2",
+ "title": "路口監視器",
+ "level": "中等",
+ "source": "第七章 實作 7-2",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 15,
+  "mid": 4,
+  "max": 4
+ }
+}

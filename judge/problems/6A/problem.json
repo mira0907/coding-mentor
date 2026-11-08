@@ -1,0 +1,14 @@
+{
+ "id": "6A",
+ "title": "關鍵道路",
+ "level": "基礎",
+ "source": "第六章 範例 6-A",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 15,
+  "mid": 4,
+  "max": 5
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "1A",
+ "title": "握手統計",
+ "level": "基礎",
+ "source": "第一章 範例 1-A",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 15,
+  "mid": 4,
+  "max": 4
+ }
+}

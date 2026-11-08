@@ -1,0 +1,14 @@
+{
+ "id": "2-3",
+ "title": "停機檢修",
+ "level": "困難",
+ "source": "第二章 實作 2-3",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 15,
+  "mid": 4,
+  "max": 5
+ }
+}

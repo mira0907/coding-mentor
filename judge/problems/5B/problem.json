@@ -1,0 +1,14 @@
+{
+ "id": "5B",
+ "title": "可達點計數",
+ "level": "困難",
+ "source": "第五章 範例 5-B",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 15,
+  "mid": 4,
+  "max": 4
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "5-3",
+ "title": "單車路線",
+ "level": "困難",
+ "source": "第五章 實作 5-3",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 15,
+  "mid": 4,
+  "max": 6
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "id": "5-1",
+ "title": "卡住的關卡",
+ "level": "簡單",
+ "source": "第五章 實作 5-1",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 15,
+  "mid": 4,
+  "max": 5
+ }
+}

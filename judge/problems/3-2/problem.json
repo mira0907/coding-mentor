@@ -1,0 +1,14 @@
+{
+ "id": "3-2",
+ "title": "最短路計數",
+ "level": "中等",
+ "source": "第三章 實作 3-2",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 20,
+  "mid": 4,
+  "max": 5
+ }
+}

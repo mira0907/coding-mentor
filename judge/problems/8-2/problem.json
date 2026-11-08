@@ -1,0 +1,14 @@
+{
+ "id": "8-2",
+ "title": "掃街車路線",
+ "level": "中等",
+ "source": "第八章 實作 8-2",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 20,
+  "mid": 4,
+  "max": 5
+ }
+}

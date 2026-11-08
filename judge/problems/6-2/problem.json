@@ -1,0 +1,14 @@
+{
+ "id": "6-2",
+ "title": "颱風停課通知",
+ "level": "中等",
+ "source": "第六章 實作 6-2",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 15,
+  "mid": 4,
+  "max": 6
+ }
+}

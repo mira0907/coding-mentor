@@ -1,0 +1,14 @@
+{
+ "id": "2-2",
+ "title": "夜市火災",
+ "level": "中等",
+ "source": "第二章 實作 2-2",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 15,
+  "mid": 4,
+  "max": 6
+ }
+}

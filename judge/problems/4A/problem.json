@@ -1,0 +1,14 @@
+{
+ "id": "4A",
+ "title": "村莊供電",
+ "level": "基礎",
+ "source": "第四章 範例 4-A",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 20,
+  "mid": 3,
+  "max": 5
+ }
+}

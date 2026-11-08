@@ -1,0 +1,14 @@
+{
+ "id": "1B",
+ "title": "三角形計數",
+ "level": "困難",
+ "source": "第一章 範例 1-B",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 15,
+  "mid": 4,
+  "max": 4
+ }
+}

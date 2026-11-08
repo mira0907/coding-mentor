@@ -1,0 +1,14 @@
+{
+ "id": "7-1",
+ "title": "變電所歲修",
+ "level": "簡單",
+ "source": "第七章 實作 7-1",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 15,
+  "mid": 4,
+  "max": 4
+ }
+}

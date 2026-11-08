@@ -1,0 +1,14 @@
+{
+ "id": "4-1",
+ "title": "修路計畫",
+ "level": "簡單",
+ "source": "第四章 實作 4-1",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 16,
+  "mid": 4,
+  "max": 5
+ }
+}

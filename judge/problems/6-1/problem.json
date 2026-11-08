@@ -1,0 +1,14 @@
+{
+ "id": "6-1",
+ "title": "關鍵路口",
+ "level": "簡單",
+ "source": "第六章 實作 6-1",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 15,
+  "mid": 4,
+  "max": 6
+ }
+}

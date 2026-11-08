@@ -1,0 +1,14 @@
+{
+ "id": "4B",
+ "title": "帳本矛盾",
+ "level": "困難",
+ "source": "第四章 範例 4-B",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 20,
+  "mid": 3,
+  "max": 5
+ }
+}

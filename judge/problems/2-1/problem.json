@@ -1,0 +1,14 @@
+{
+ "id": "2-1",
+ "title": "島嶼探險",
+ "level": "簡單",
+ "source": "第二章 實作 2-1",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 15,
+  "mid": 4,
+  "max": 5
+ }
+}

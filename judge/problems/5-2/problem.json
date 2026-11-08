@@ -1,0 +1,14 @@
+{
+ "id": "5-2",
+ "title": "專案排程",
+ "level": "中等",
+ "source": "第五章 實作 5-2",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 15,
+  "mid": 4,
+  "max": 5
+ }
+}
