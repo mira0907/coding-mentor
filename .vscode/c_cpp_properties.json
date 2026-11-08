@@ -2,7 +2,7 @@
   "configurations": [
     {
       "name": "Mac",
-      "includePath": ["${workspaceFolder}/include", "${workspaceFolder}/**"],
+      "includePath": ["${workspaceFolder}/include"],
       "defines": ["LOCAL"],
       "compilerPath": "/usr/bin/clang++",
       "cppStandard": "c++17",
