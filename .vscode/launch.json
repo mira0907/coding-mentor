@@ -1,0 +1,32 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "除錯：講義題目（輸入用 judge 的範例）",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${fileDirname}/${fileBasenameNoExtension}_debug",
+      "cwd": "${fileDirname}",
+      "stdio": ["${workspaceFolder}/judge/problems/${fileBasenameNoExtension}/samples/1.in", null, null],
+      "preLaunchTask": "Build debug (current file)"
+    },
+    {
+      "name": "除錯：自己的題目（輸入用同資料夾的 tests/1.in）",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${fileDirname}/${fileBasenameNoExtension}_debug",
+      "cwd": "${fileDirname}",
+      "stdio": ["${fileDirname}/tests/1.in", null, null],
+      "preLaunchTask": "Build debug (current file)"
+    },
+    {
+      "name": "除錯：在終端機自己輸入",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${fileDirname}/${fileBasenameNoExtension}_debug",
+      "cwd": "${fileDirname}",
+      "terminal": "integrated",
+      "preLaunchTask": "Build debug (current file)"
+    }
+  ]
+}

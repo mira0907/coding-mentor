@@ -1,5 +1,19 @@
 {
-  "files.associations": { "*.in": "plaintext", "*.out": "plaintext" },
-  "files.exclude": { "**/sol": true, "**/*.dSYM": true },
-  "C_Cpp.default.cppStandard": "c++17"
+  "files.associations": { "*.in": "plaintext", "*.out": "plaintext", "*.ans": "plaintext" },
+  "files.exclude": {
+    "**/sol": true,
+    "**/*.dSYM": true,
+    "**/*_debug": true,
+    "judge/.cache": true,
+    "**/__pycache__": true
+  },
+  "C_Cpp.default.cppStandard": "c++17",
+  "C_Cpp.default.compilerPath": "/usr/bin/clang++",
+  "editor.tabSize": 4,
+
+  // 練習時關掉 AI 自動寫程式：灰色的預測程式碼、下一步編輯建議、AI 功能
+  "editor.inlineSuggest.enabled": false,
+  "github.copilot.enable": { "*": false },
+  "github.copilot.nextEditSuggestions.enabled": false,
+  "chat.disableAIFeatures": true
 }

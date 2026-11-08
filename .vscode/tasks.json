@@ -11,6 +11,32 @@
       "problemMatcher": ["$gcc"]
     },
     {
+      "label": "Judge current file",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/judge.sh",
+      "args": ["${input:judgeId}", "${file}"],
+      "group": "test",
+      "presentation": { "reveal": "always", "focus": true, "panel": "shared", "clear": true },
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Judge: list problems",
+      "type": "shell",
+      "command": "python3",
+      "args": ["${workspaceFolder}/judge/judge.py", "list"],
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build debug (current file)",
+      "type": "shell",
+      "command": "clang++",
+      "args": ["-std=c++17", "-g", "-O0", "-DLOCAL", "-Wall", "-Wextra", "-Wshadow",
+               "-I${workspaceFolder}/include", "${file}", "-o", "${fileDirname}/${fileBasenameNoExtension}_debug"],
+      "presentation": { "reveal": "silent", "panel": "shared" },
+      "problemMatcher": ["$gcc"]
+    },
+    {
       "label": "New problem",
       "type": "shell",
       "command": "${workspaceFolder}/scripts/new.sh",
@@ -19,6 +45,7 @@
     }
   ],
   "inputs": [
-    { "id": "problemName", "type": "promptString", "description": "題目名稱（例如 cf-1900A）" }
+    { "id": "problemName", "type": "promptString", "description": "題目名稱（例如 cf-1900A）" },
+    { "id": "judgeId", "type": "promptString", "description": "題號（例如 3-2、1A）。檔名就是題號時直接按 Enter", "default": "" }
   ]
 }
