@@ -55,9 +55,28 @@ cout << (it3 == path.end()) << '\n';              // 找不到時等於 end()，
 1
 ```
 
+在 pair 陣列裡找，要寫出型態：
+
+```cpp
+vector<pair<int, int>> bre = {{1, 2}, {3, 1}};    // bre：停駛的航線
+// x：要查的第一座島
+// com：要查的第二座島
+int x = 3, com = 1;
+cout << (find(bre.begin(), bre.end(), make_pair(x, com)) != bre.end()) << '\n';       // 找得到 {3, 1}
+cout << (find(bre.begin(), bre.end(), pair<int, int>{com, x}) != bre.end()) << '\n';  // {1, 3} 不在陣列裡
+```
+
+輸出：
+
+```text
+1
+0
+```
+
 **常見錯誤**
 
 - **沒檢查找不到的情況**：找不到時回傳 `end()`，對它取值 `*it` 會 RE。不確定一定找得到時，先判斷 `it != a.end()`。
+- **直接傳大括號 `{x, y}`**：`find(b.begin(), b.end(), {x, y})` 會編譯錯誤（`no matching function for call to 'find'`）。`find` 要從傳入的值推斷型態，而 `{x, y}` 沒有型態。要寫成 `make_pair(x, y)` 或 `pair<int,int>{x, y}`。
 - **放在迴圈裡用**：每次都是 O(n)，放在 n 次的迴圈裡就變成 O(n²)。要常常查「某個值在哪裡」時，改用陣列記錄位置，例如 `pos[x] = 第幾格`。
 
 **出現在**：1-2
