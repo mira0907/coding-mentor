@@ -61,8 +61,9 @@
 
 ## Git 規則
 
-- 只有使用者要求時才 commit 或 push。
-- 每次修改完 repo 裡的檔案，都要在回覆結尾主動詢問使用者要不要 commit 並 push，不要等使用者自己提起。
+- 使用者已同意自動上傳（2026-11-08）：每次修改完 repo 裡的檔案，不用詢問，直接 commit 並 push，在回覆結尾說明這次推了哪些 commit。
+- 使用者自己改過的檔案（例如 `solutions/` 裡的解答與練習紀錄）也一起推，但和我做的修改分成不同 commit。
+- push 前確認沒有放入隱私資料（見下方「公開 repo 的隱私」）。
 - commit 訊息用繁體中文，一個 commit 只做一件事，寫清楚做了什麼，例如「新增 cf-1900A 解答與卡關紀錄」。
 - commit 前先看 `git status` 與 `git diff`，確認沒有夾帶不相關的檔案。
 - 不要 commit 編譯產物（`sol` 執行檔、`.dSYM`、`*.o`、`a.out`），這些已列在 `.gitignore`。
