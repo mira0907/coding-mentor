@@ -12,6 +12,7 @@
 - `problems/<題目名稱>/`：每題一個資料夾，含 `sol.cpp`、`tests/`（`1.in`／`1.out` 成對）與 `README.md`。
 - `template/template.cpp`：新題目的模板，`LOCAL` 巨集下有 `dbg(x)`，輸出到 stderr。
 - `include/bits/stdc++.h`：macOS 沒有這個標頭檔，編譯時必須加 `-I include`。
+- `notes/syntax/`：C++ 語法記錄庫。使用者問到新語法時，照 `notes/syntax/_template.md` 的格式加進對應檔案並更新速查表，再執行 `python3 -I notes/syntax/check.py` 確認範例輸出正確。
 - `notes/`：學習講義。`docs/`：使用說明，C++ 環境見 `docs/cpp-environment.md`。
 - `judge/`：本機評測系統，`judge/problems/<題號>/` 每題一個資料夾，格式見 `judge/README.md`。
 - `solutions/`：使用者寫的講義題目解答，檔名用題號，例如 `solutions/3-1.cpp`。

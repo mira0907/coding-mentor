@@ -21,6 +21,7 @@ docs/           使用說明
 ## 講義與文件
 
 - [競賽圖論講義](notes/graph-theory.md)：八章觀念、十六題範例程式題、章末觀念檢測，以及每章簡單、中等、困難各一題的實作題與詳解
+- [C++ 語法記錄庫](notes/syntax/README.md)：vector 與 `find`、`distance`、`sort`、`lower_bound` 等常用函式，附可執行範例；遇到新語法就加進來
 - [講義題目 Judge](judge/README.md)：在本機評測講義的 40 題，回報 AC、WA、TLE、RE
 - [C++ 開發環境](docs/cpp-environment.md)：已安裝的工具、VS Code 除錯、常見問題
 - [GitHub 使用指南](docs/github-guide.md)：commit、push、pull 與常見狀況
