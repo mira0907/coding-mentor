@@ -1,0 +1,14 @@
+{
+ "id": "x-ai666",
+ "title": "AI-666 賺多少",
+ "level": "困難",
+ "source": "使用者提供的題目截圖（原出處未標示）；N、K 的上限截圖沒有寫，這裡自訂為 N ≤ 10⁵、K ≤ 100",
+ "time_limit": 1.0,
+ "memory_mb": 256,
+ "checker": null,
+ "tests": {
+  "small": 15,
+  "mid": 4,
+  "max": 6
+ }
+}
