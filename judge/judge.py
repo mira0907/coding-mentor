@@ -72,6 +72,7 @@ def load_problem(pid):
     prob.setdefault("time_limit", 1.0)
     prob.setdefault("memory_mb", 256)
     prob.setdefault("checker", None)
+    prob.setdefault("subtasks", None)                       # 子題配分：[{"score": 13, "desc": "N ≤ 1000"}, ...]
     counts = dict(DEFAULT_COUNTS)
     counts.update(prob.get("tests", {}))
     prob["tests"] = counts
@@ -247,6 +248,8 @@ def build(pid, verify=True, quiet=False):
                     sys.exit(f"[{pid}] 參考解與暴力解在測資 {t['name']} 不一致：{why}")
         t["ref_cpu"] = round(r["cpu"], 3)
         ref_max = max(ref_max, r["cpu"])
+    if prob["subtasks"]:
+        classify(prob, pid, tests)
     for f in ("tmp.out", "brute.out"):
         if os.path.exists(os.path.join(td, f)):
             os.remove(os.path.join(td, f))
@@ -256,6 +259,35 @@ def build(pid, verify=True, quiet=False):
     if not quiet:
         print(f"[{pid}] 產生 {len(tests)} 筆測資，參考解最慢 {ref_max:.2f} 秒")
     return meta
+
+
+def classify(prob, pid, tests):
+    """用 subtasks.py 判斷每筆測資符合哪些子題的限制，記在 t["subtasks"]"""
+    cls = os.path.join(problem_dir(pid), "subtasks.py")
+    if not os.path.exists(cls):
+        sys.exit(f"[{pid}] problem.json 有 subtasks，但找不到 subtasks.py")
+    td = tests_dir(pid)
+    count = [0] * len(prob["subtasks"])                     # 每個子題分到幾筆測資
+    for t in tests:
+        with open(os.path.join(td, t["name"] + ".in"), "rb") as fi:
+            r = subprocess.run([sys.executable, "-I", cls], stdin=fi, capture_output=True, text=True)
+        if r.returncode != 0:
+            sys.exit(f"[{pid}] subtasks.py 在測資 {t['name']} 失敗：\n{r.stderr}")
+        t["subtasks"] = sorted(int(x) for x in r.stdout.split())
+        for x in t["subtasks"]:
+            count[x - 1] += 1
+    for i, c in enumerate(count):
+        if c == 0:
+            sys.exit(f"[{pid}] 子題 {i + 1} 沒有任何測資，請調整 gen.py")
+
+
+def subtask_score(prob, tests, verdicts):
+    """回傳 (總分, 每個子題是否拿到)：子題內所有測資都 AC 才拿到該子題的分數"""
+    got = []
+    for i in range(len(prob["subtasks"])):
+        mine = [v for t, v in zip(tests, verdicts) if i + 1 in t.get("subtasks", [])]
+        got.append(bool(mine) and all(v == "AC" for v in mine))
+    return sum(st["score"] for st, g in zip(prob["subtasks"], got) if g), got
 
 
 def ensure_built(pid):
@@ -308,6 +340,7 @@ def judge(pid, src, debug=False, quiet=False, record=True):
     first_fail = None
     worst = "AC"
     order = ["AC", "WA", "MLE", "TLE", "RE"]
+    verdicts = []                                           # 每筆測資的結果，算子題分數用
     for t in meta["tests"]:
         inp = os.path.join(td, t["name"] + ".in")
         ans = os.path.join(td, t["name"] + ".ans")
@@ -323,17 +356,26 @@ def judge(pid, src, debug=False, quiet=False, record=True):
             good, why = compare(prob, pid, inp, ans, out)
             v = "AC" if good else "WA"
         passed += v == "AC"
+        verdicts.append(v)
         if order.index(v) > order.index(worst):
             worst = v
         if v != "AC" and first_fail is None:
             first_fail = (t, v, why, inp, ans, out, r)
         if not quiet:
             kind = {"sample": "範例", "small": "小", "mid": "中", "max": "大"}[t["kind"]]
-            print(f"  #{t['name']} {kind:<2} {verdict_text(v):<16} {r['cpu']:5.2f}s {r['mem_mb']:6.1f}MB  {why if v != 'AC' else ''}")
+            sub = f"子題 {','.join(map(str, t['subtasks']))}" if t.get("subtasks") else ""
+            print(f"  #{t['name']} {kind:<2} {verdict_text(v):<16} {r['cpu']:5.2f}s {r['mem_mb']:6.1f}MB  {pad(sub, 12) if sub else ''}{why if v != 'AC' else ''}")
     total = len(meta["tests"])
+    score = None                                            # 有子題時的得分
+    if prob["subtasks"]:
+        score, got = subtask_score(prob, meta["tests"], verdicts)
     if not quiet:
         print()
         print(f"結果：{verdict_text(worst)}，通過 {passed} / {total} 筆")
+        if score is not None:
+            print(f"得分：{score} / {sum(st['score'] for st in prob['subtasks'])}")
+            for i, (st, g) in enumerate(zip(prob["subtasks"], got)):
+                print(f"  子題 {i + 1}（{st['score']:>3} 分）{paint('拿到', '32') if g else '沒拿到'}  {st.get('desc', '')}")
         if first_fail:
             t, v, why, inp, ans, out, r = first_fail
             print(f"\n第一筆沒通過的是 #{t['name']}（{v}）：{why}")
@@ -353,17 +395,19 @@ def judge(pid, src, debug=False, quiet=False, record=True):
             if v == "RE" and not debug:
                 print("  提示：加上 --debug 重跑，sanitizer 會指出出錯的那一行。")
     if record:
-        save_result(pid, worst, passed, total)
+        save_result(pid, worst, passed, total, score)
     return worst
 
 
-def save_result(pid, verdict, passed, total):
+def save_result(pid, verdict, passed, total, score=None):
     """記錄每題的最佳結果"""
     data = load_results()
     old = data.get(pid)
     if old is None or passed >= old.get("passed", 0):
         data[pid] = {"verdict": verdict, "passed": passed, "total": total,
                      "time": time.strftime("%Y-%m-%d %H:%M")}
+        if score is not None:
+            data[pid]["score"] = score
         os.makedirs(os.path.dirname(RESULTS), exist_ok=True)
         with open(RESULTS, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=1)
@@ -394,7 +438,8 @@ def cmd_list():
         prob = load_problem(pid)
         res = data.get(pid)                         # 這題的最佳紀錄，沒交過是 None
         mark = "" if res is None else (paint("AC", "32") if res["verdict"] == "AC"
-                                       else f"{res['verdict']} {res['passed']}/{res['total']}")
+                                       else f"{res['verdict']} {res['passed']}/{res['total']}"
+                                       + (f"（{res['score']} 分）" if "score" in res else ""))
         solved += bool(res and res["verdict"] == "AC")
         print(pad(pid, 7) + pad(prob.get("level", ""), 7) + pad(prob["title"], 22)
               + pad(prob.get("source", ""), 22) + mark)

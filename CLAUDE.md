@@ -56,6 +56,7 @@
 5. `brute.py`：獨立、明顯正確的暴力解（可以指數時間），只跑小測資。
 6. `gen.py`：介面 `python3 -I gen.py SEED SIZE`，SIZE 是 small／mid／max。small 要小到暴力解跑得動，並涵蓋邊界情況；max 用題目上限，依 seed 換鏈狀、星狀、全部相同、最大權重等刁鑽形狀；所有測資都要符合題目限制。
 7. 答案不唯一（「輸出任一組」）時寫 `checker.py`：`python3 -I checker.py 輸入 參考答案 使用者輸出`，自己驗證使用者的答案是否合法，正確回傳 0。
+7-1. 題目有子題配分時，在 `problem.json` 加 `subtasks`（每個子題的 `score` 與 `desc`），並寫 `subtasks.py`：讀入一筆測資，印出它符合的子題編號。參考解要能通過最大的子題；`gen.py` 要讓每個子題都有專屬的測資，包含該子題的最大規模。
 8. 執行 `python3 judge/judge.py test <題號>`，必須 AC；再寫一份常見的錯誤解法（例如 int 溢位、少判邊界、複雜度太高）確認 judge 判得出錯，測完刪掉 `judge/.results.json` 裡這題的紀錄。
 9. 使用者是來練習的：除非使用者要求，不要在對話中貼出參考解或講解解法，只回報題號、測資筆數與怎麼評測。
 

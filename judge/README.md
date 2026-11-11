@@ -44,7 +44,10 @@ judge/problems/<題號>/
   gen.py         測資產生器：python3 -I gen.py SEED SIZE，SIZE 是 small、mid 或 max
   brute.py       暴力解，只在小測資上用來驗證參考解
   checker.py     （答案不唯一時才有）python3 -I checker.py 輸入 參考答案 你的輸出，正確時回傳 0
+  subtasks.py    （有子題時才有）讀入一筆測資，印出它符合哪些子題的限制，例如「2 3 4」
 ```
+
+有子題配分的題目，`problem.json` 加上 `"subtasks": [{"score": 13, "desc": "N ≤ 1000、K = 1"}, ...]`。評測時，符合某個子題限制的測資全部 AC，才拿到那個子題的分數，最後會印出總分。
 
 產生的測資放在 `judge/.cache/`，不進 git，需要時會自動重新產生。
 
