@@ -2,13 +2,31 @@
  "id": "x-ai666",
  "title": "AI-666 賺多少",
  "level": "困難",
- "source": "使用者提供的題目截圖（原出處未標示）；N、K 的上限截圖沒有寫，這裡自訂為 N ≤ 10⁵、K ≤ 100",
+ "source": "使用者提供的題目截圖（原出處未標示）",
  "time_limit": 1.0,
  "memory_mb": 256,
  "checker": null,
  "tests": {
   "small": 15,
-  "mid": 4,
+  "mid": 6,
   "max": 6
- }
+ },
+ "subtasks": [
+  {
+   "score": 13,
+   "desc": "N ≤ 1,000、K = 1"
+  },
+  {
+   "score": 24,
+   "desc": "N ≤ 50,000、K ≤ 100"
+  },
+  {
+   "score": 45,
+   "desc": "N ≤ 200,000、K ≤ N"
+  },
+  {
+   "score": 18,
+   "desc": "N ≤ 2,000,000、K ≤ N"
+  }
+ ]
 }
